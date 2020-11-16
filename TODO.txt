@@ -1,0 +1,14 @@
+
+get updated index.php
+convert request content-type checking to a hook
+convert request accept checking to a hook
+convert auth checking to a hook
+
+GET history
+ - between
+
+GET interfaces
+ - method
+ - domain & path | URL
+ - status (optional)
+
