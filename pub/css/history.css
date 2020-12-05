@@ -1,0 +1,40 @@
+
+body {
+	font-family: "Segoe UI Historic", "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.method-GET {
+	background: #58c858;
+	border-radius: 4px;
+	padding: 3px 5px;
+}
+
+.method-POST {
+	background: #e06060;
+	border-radius: 4px;
+	padding: 3px 5px;
+}
+
+.status-200 {
+	background: #8080ff;
+	border-radius: 4px;
+	padding: 3px 5px;
+}
+
+.status-201 {
+	background: #6060ff;
+	border-radius: 4px;
+	padding: 3px 5px;
+}
+
+.status-204 {
+	background: #a0a0ff;
+	border-radius: 4px;
+	padding: 3px 5px;
+}
+
+.status-401 {
+	background: #ff8080;
+	border-radius: 4px;
+	padding: 3px 5px;
+}

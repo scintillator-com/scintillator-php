@@ -54,10 +54,10 @@ final class Request{
 	 * @return (boolean)
 	*/
 	public function isContentType( $type ){
-		if( empty( $this->headers[ 'Content-Type' ] ) )
+		if( empty( $this->headers[ 'content-type' ] ) )
 			return false;
 
-		if( strncmp( $this->headers[ 'Content-Type' ], $type, strlen( $type ) ) != 0 )
+		if( strncmp( $this->headers[ 'content-type' ], $type, strlen( $type ) ) != 0 )
 			return false;
 
 		return true;

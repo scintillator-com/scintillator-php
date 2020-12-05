@@ -106,9 +106,18 @@ class Format{
 
 		self::$formats[ 'custom' ] = new CustomFormat();
 
-		self::$formats[ 'email' ] = new Email();
+		//self::$formats[ 'email' ] = new Email();
 
 		self::$formats[ 'enum' ] = new Enum();
+
+
+		self::$formats[ 'hex' ] = new Format( 'hexadecimal' );
+		self::$formats[ 'hex' ]->format = function( $self, $val ){
+			return "{$val}";
+		};
+		self::$formats[ 'hex' ]->isValid = function( $self, $val ){
+			return preg_match( '/^([0-9a-f]+)$/i', $val );
+		};
 
 		self::$formats[ 'integer' ] = new Format( 'integer' );
 		self::$formats[ 'integer' ]->format = function( $self, $val ){

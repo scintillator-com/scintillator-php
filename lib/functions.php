@@ -156,6 +156,10 @@ function is_numeric_array( &$array ){
 	if( !is_array( $array ) )
 		return false;
 
+	//empty array is numeric, technically
+	if( empty( $array ) )
+		return true;
+
 	if( !array_key_exists( 0, $array ) )
 		return false;
 

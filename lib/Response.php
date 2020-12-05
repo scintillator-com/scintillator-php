@@ -3,6 +3,7 @@ final class Response{
 	public $content = null;
 	public $contentType = null;
 	public $formatter = null;
+	public $headers = array();
 	
 	public final function __construct( $content=null, $contentType=null ){
 		$this->content = $content;
@@ -39,6 +40,13 @@ final class Response{
 	}
 
 	public final function emit(){
+		foreach( $this->headers as $k => $v ){
+			if( is_numeric( $k ) )
+				header( $v );
+			else
+				header( "{$k}: {$v}" );
+		}
+
 		try{
 			$this->formatter->emit( $this->content );
 			return $this;
@@ -64,7 +72,7 @@ final class Response{
 			}
 		}
 	}
-	
+
 	public final function setContentType( $contentType ){
 		if( $contentType ){
 			$this->contentType = strtolower( trim( $contentType ) );

@@ -29,7 +29,8 @@ final class Configuration{
 		}
 
 		$hostNames = (array)$hostNames;
-		$hostNames[] = trim( `hostname` );
+		$hostNames[] = gethostname();
+		//$hostNames[] = php_uname('n');
 		if( !empty( $_SERVER[ 'HTTP_HOST' ] ) ){
 			$hostNames[] = $_SERVER[ 'HTTP_HOST' ];
 		}

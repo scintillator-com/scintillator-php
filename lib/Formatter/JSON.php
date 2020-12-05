@@ -16,8 +16,12 @@ final class Formatter_JSON extends Formatter{
 	public final function format( &$data ){
 		if( $data instanceof Exception )
 			return $this->formatException( $data );
-		else
-			return json_encode( $data );
+
+		$config = Configuration::Load();
+		if( !empty( $config->isDeveloper ) )
+			return json_encode( $data, JSON_PRETTY_PRINT );
+
+		return json_encode( $data );
 	}
 
 	public final function formatData( &$data ){
