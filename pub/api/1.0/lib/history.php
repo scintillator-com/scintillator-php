@@ -1,7 +1,5 @@
 <?php
 
-require( '/home/lc/sites/scintillator-php/vendor/autoload.php' );
-
 use \Models;
 
 final class history extends Route {

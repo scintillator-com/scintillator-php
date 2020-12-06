@@ -7,15 +7,10 @@ final class Application{
 	public static final function init(){
 		self::$start = microtime( true );
 
-		error_reporting( E_ALL & ~E_STRICT );
-		ini_set( 'display_errors', 0 );
-		date_default_timezone_set('UTC');
+		define( 'LIB', dirname( $_SERVER[ 'DOCUMENT_ROOT' ] ) . DIRECTORY_SEPARATOR .'lib' );
+		require_once( LIB . DIRECTORY_SEPARATOR .'config.php' );
 
-		$lib = dirname( $_SERVER[ 'DOCUMENT_ROOT' ] ) . DIRECTORY_SEPARATOR .'lib'. DIRECTORY_SEPARATOR;
-		define( 'LIB', $lib );
 		//define( 'ROOT', $_SERVER[ 'DOCUMENT_ROOT' ] );
-
-		require_once( LIB.'config.php' );
 
 		$config = Configuration::Load();
 		if( !empty( $config->isDeveloper ) ){

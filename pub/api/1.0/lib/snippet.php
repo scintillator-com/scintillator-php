@@ -1,7 +1,5 @@
 <?php
 
-require( '/home/lc/sites/scintillator-php/vendor/autoload.php' );
-
 final class snippet extends Route {
 	public final function OPTIONS(){
 		header( 'HTTP/1.1 204 No Content', true, 204 );

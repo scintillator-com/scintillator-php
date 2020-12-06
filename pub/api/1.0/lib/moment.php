@@ -1,7 +1,5 @@
 <?php
 
-require( '/home/lc/sites/scintillator-php/vendor/autoload.php' );
-
 final class moment extends Route {
 	public final function GET(){
 		$this->response->formatter = new Formatter_JSON();
