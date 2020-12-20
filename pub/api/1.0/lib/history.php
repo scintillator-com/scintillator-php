@@ -1,25 +1,20 @@
 <?php
 
-use \Models;
-
 final class history extends Route {
-	protected $formats = array(
-		'application/json'
-	);
+	use \Authorized;
+	use \Mongo;
 
-	//public final function __construct( Request $request ){
-	//	parent::__construct( $request );
-	//}
+	public final function __construct( Request $request ){
+		parent::__construct( $request );
+		$this->response->cors( 'GET' );
+	}
 
 	public final function GET(){
-		$this->response->formatter = new Formatter_JSON();
-		//$this->response->headers[ 'Access-Control-Allow-Credentials' ] = 'true';
-		$this->response->headers[ 'Access-Control-Allow-Origin' ] = '*';
-		if( !empty( $_SERVER['HTTP_ORIGIN'] ) )
-			$this->response->headers[ 'Access-Control-Allow-Origin' ] = $_SERVER['HTTP_ORIGIN'];
-
+		$this->json()->authorize();
 
 		$this->required = array();
+		
+		//TODO: mine=1
 		$this->optional = array(
 			//request
 			'created-after'  => array( 'format' => 'iso8601' ),
@@ -39,7 +34,7 @@ final class history extends Route {
 			//
 			'sort' => array( 'format' => 'string', 'default' => 'request.created' )
 		);
-		$data = $this->pageable( 1, 50 )->validate( $_GET );
+		$data = $this->pageable( 10, 50 )->validate( $_GET );
 		
 		
 		$query = array();
@@ -84,34 +79,15 @@ final class history extends Route {
 			}
 		}
 
+		//TODO: apply org_id
+
+
 		$responses = array();
-		$config = Configuration::Load();
-		$client = new MongoDB\Client( $config->mongoDB['uri'] );
-		$res = $client->selectDatabase( 'scintillator' )->selectCollection( 'moments' )->find( $query, $options );
+		$res = $this->selectCollection( 'moments' )->find( $query, $options );
 		foreach( $res as $moment ){
 			$responses[] = \Models\Moment::formatSummary( $moment );
 		}
 
-		return $responses;
+		$this->response->emit( $responses, 200 );
 	}
-
-	public final function OPTIONS(){
-		header( 'HTTP/1.1 204 No Content', true, 204 );
-		//header( 'Access-Control-Allow-Credentials: true');
-		//header( 'Access-Control-Allow-Headers: Content-Type' );
-		header( 'Access-Control-Allow-Methods: GET,HEAD' );
-		
-		if( !empty( $_SERVER['HTTP_ORIGIN'] ) )
-			header( "Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}" );
-		else
-			header( "Access-Control-Allow-Origin: *" );
-		exit;
-
-		//$this->response->formatter = new Formatter_None();
-		//$this->response->headers[ 'Access-Control-Allow-Credentials' ] = 'true';
-		//$this->response->headers[ 'Access-Control-Allow-Headers' ] = 'Content-Type';
-		//$this->response->headers[ 'Access-Control-Allow-Methods' ] = 'GET,HEAD';
-		//$this->response->headers[ 'Access-Control-Allow-Origin' ] = $_SERVER['HTTP_ORIGIN'];
-	}
-
 }

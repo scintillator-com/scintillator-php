@@ -1,9 +1,15 @@
 <?php
 abstract class Formatter{
-	public $code = 200;
-	
-	public abstract function emit( &$data, $code=null );
-	public abstract function format( &$data );
-	public abstract function formatData( &$data );
-	public abstract function formatException( Exception &$exception );
+	private $_cache;
+
+	public function clearCache(){
+		$this->_cache = null;
+		return $this;
+	}
+
+	public abstract function emit( &$content );
+	public abstract function format( &$content, $isCached=true );
+	//public abstract function formatData( &$content );
+	//public abstract function formatException( Exception &$exception );
+	public abstract function getHeaders( &$content, $isCached=true );
 }

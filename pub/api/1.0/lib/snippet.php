@@ -1,40 +1,15 @@
 <?php
 
 final class snippet extends Route {
-	public final function OPTIONS(){
-		header( 'HTTP/1.1 204 No Content', true, 204 );
-		//header( 'Access-Control-Allow-Credentials: true');
-		header( 'Access-Control-Allow-Headers: Accept,Content-Type' );
-		header( 'Access-Control-Allow-Methods: POST,PUT' );
-		
-		if( !empty( $_SERVER['HTTP_ORIGIN'] ) )
-			header( "Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}" );
-		else
-			header( "Access-Control-Allow-Origin: *" );
-		exit;
+	use \Mongo;
 
-		//$this->response->formatter = new Formatter_None();
-		//$this->response->headers[ 'Access-Control-Allow-Credentials' ] = 'true';
-		//$this->response->headers[ 'Access-Control-Allow-Headers' ] = 'Content-Type';
-		//$this->response->headers[ 'Access-Control-Allow-Methods' ] = 'GET,HEAD';
-		//$this->response->headers[ 'Access-Control-Allow-Origin' ] = $_SERVER['HTTP_ORIGIN'];
+	public final function __construct( Request $request ){
+		parent::__construct( $request );
+		$this->response->cors(array( 'POST', 'PUT' ));
 	}
 
 	public final function POST(){
-		$this->response->formatter = new Formatter_JSON();
-		//$this->response->headers[ 'Access-Control-Allow-Credentials' ] = 'true';
-		$this->response->headers[ 'Access-Control-Allow-Origin' ] = '*';
-		if( !empty( $_SERVER['HTTP_ORIGIN'] ) )
-			$this->response->headers[ 'Access-Control-Allow-Origin' ] = $_SERVER['HTTP_ORIGIN'];
-
-
-		if( !$this->request->isContentType( 'application/json' ) )
-			throw new Exception( "Unsupported content type: {$this->request->headers['content-type']}", 422 );
-
-		$this->request->data = $this->request->getParseJSON();
-		if( empty( $this->request->data ) )
-			throw new Exception( "Can't parse data", 422 );
-
+		$this->authenticate()->json();
 
 		$config = new stdClass();
 		$config->required = array(
@@ -57,42 +32,27 @@ final class snippet extends Route {
 		$formatter->optional = array(
 		);
 
+
 		$this->required = array(
-			'moment_id' => array( 'format' => 'hex', 'scalar' ),
+			'moment_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
 			'config'    => array( 'format' => 'object', 'object' => $config ),
 			'formatter' => array( 'format' => 'object', 'object' => $formatter )
 		);
 		$this->optional = array();
-		$snippet = $this->validate();
-		$snippet[ 'moment_id' ] = new MongoDB\BSON\ObjectId( $snippet[ 'moment_id' ] );
+		$data = $this->validate();
 
-		$this->_client = new MongoDB\Client( 'mongodb://192.168.1.31:27017' );
-		$result = $this->_client->selectDatabase( 'scintillator' )
-			->selectCollection( 'snippets' )
-			->insertOne( $snippet );
+		$snippet = new Snippet( $data );
+		$result = $this->selectCollection( 'snippets' )->insertOne( $snippet );
 		$id = $result->getInsertedId();
 
 		$this->response->code = 201;
 		return array(
-			'_id' => "{$id}"
+			'snippet_id' => "{$id}"
 		);
 	}
 
 	public final function PUT(){
-		$this->response->formatter = new Formatter_JSON();
-		//$this->response->headers[ 'Access-Control-Allow-Credentials' ] = 'true';
-		$this->response->headers[ 'Access-Control-Allow-Origin' ] = '*';
-		if( !empty( $_SERVER['HTTP_ORIGIN'] ) )
-			$this->response->headers[ 'Access-Control-Allow-Origin' ] = $_SERVER['HTTP_ORIGIN'];
-
-
-		if( !$this->request->isContentType( 'application/json' ) )
-			throw new Exception();
-
-		$this->request->data = $this->request->getParseJSON();
-		if( empty( $this->request->data ) )
-			throw new Exception();
-
+		$this->authenticate()->json();
 
 		$config = new stdClass();
 		$config->required = array();
@@ -113,29 +73,23 @@ final class snippet extends Route {
 		$formatter->optional = array();
 
 		$this->required = array(
-			'_id'       => array( 'format' => 'hex', 'scalar' ),
-			'moment_id' => array( 'format' => 'hex', 'scalar' ),
-			'config'    => array( 'format' => 'object', 'object' => $config ),
-			'formatter' => array( 'format' => 'object', 'object' => $formatter )
+			'snippet_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
+			'moment_id'  => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
+			'config'     => array( 'format' => 'object', 'object' => $config ),
+			'formatter'  => array( 'format' => 'object', 'object' => $formatter )
 		);
 		$this->optional = array();
-		$snippet = $this->validate();
-		$snippet[ 'moment_id' ] = new MongoDB\BSON\ObjectId( $snippet[ 'moment_id' ] );
+		$data = $this->validate();
+		$snippet = new Snippet( $data );
 		
 		$query = array(
-			'_id' => new MongoDB\BSON\ObjectId( $snippet[ '_id' ] )
+			'_id' => new MongoDB\BSON\ObjectId( $data['snippet_id' ] )
 		);
-		unset( $snippet['_id'] );
 
-
-		$this->_client = new MongoDB\Client( 'mongodb://192.168.1.31:27017' );
-		$result = $this->_client->selectDatabase( 'scintillator' )
-			->selectCollection( 'snippets' )
-			->updateOne( $query, array( '$set' => $snippet ));
-
+		$result = $this->selectCollection( 'snippets' )->updateOne( $query, array( '$set' => $snippet ));
 		return array(
-			'_id'     => "{$query['_id']}",
-			'isAcknowledged' => $result->isAcknowledged(),
+			'snippet_id'     => "{$query['_id']}",
+			'is_acknowledged' => $result->isAcknowledged(),
 			'matches' => $result->getMatchedCount(),
 			'updated' => $result->getModifiedCount()
 		);

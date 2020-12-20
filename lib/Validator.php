@@ -1,6 +1,6 @@
 <?php
 
-class RequestValidator{
+class Validator{
 	private static $depth = 0;
 	public $optional = array();
 	public $required = array();
@@ -13,7 +13,7 @@ class RequestValidator{
 	public static function validate( $data, $required, $optional, $ns = '' ){
 		self::$depth++;
 
-		$validator = new RequestValidator( $required, $optional );
+		$validator = new Validator( $required, $optional );
 		$validator->_validateAny( $data );
 		$validator->_validateExclusive( $data );
 
@@ -62,11 +62,15 @@ class RequestValidator{
 					$format->throwValidationError( $param, $value );
 
 				$formatted = $format->formatArray( $value );
+				if( !empty( $attributes[ 'length' ] ) )
+					$this->_validateLength( $param, $formatted, $attributes[ 'length' ] );
+
 				if( !empty( $attributes[ 'range' ] ) )
 					$this->_validateRange( $param, $formatted, $attributes[ 'range' ] );
 
 				$reducedData[ $param ] = $formatted;
-			}else{
+			}
+			else{
 				if( in_array( 'array', $attributes, true ) )
 					throw new Exception( "The '{$param}' parameter must be an array.", 422 );
 
@@ -74,8 +78,11 @@ class RequestValidator{
 					$format->throwValidationError( $param, $value );
 
 				$formatted = $format->formatScalar( $value );
+				if( !empty( $attributes[ 'length' ] ) )
+					$this->_validateLength( $param, (array)$formatted, $attributes[ 'length' ] );
+
 				if( !empty( $attributes[ 'range' ] ) )
-					$this->_validateRange( $param, $formatted, $attributes[ 'range' ] );
+					$this->_validateRange( $param, (array)$formatted, $attributes[ 'range' ] );
 
 				$reducedData[ $param ] = $formatted;
 			}
@@ -125,9 +132,27 @@ class RequestValidator{
 		}
 	}
 
-	private function _validateRange( $param, $value, $range ){
+	private function _validateLength( $param, $values, $range ){
 		list( $min, $max ) = $range;
-		foreach( (array)$value as $v ){
+		foreach( $values as $v ){
+			if( strlen( $v ) < $min ){
+				if( $max == $min )
+					throw new Exception( "The '{$param}' parameter must have length {$min}.", 422 );
+
+				if( $max == PHP_INT_MAX )
+					throw new Exception( "The '{$param}' parameter must have length {$min} or greater.", 422 );
+
+				throw new Exception( "The '{$param}' parameter must have length between {$min} and {$max}.", 422 );
+			}
+
+			if( strlen( $v ) > $max )
+				throw new Exception( "The '{$param}' parameter must have length between {$min} and {$max}.", 422 );
+		}
+	}
+
+	private function _validateRange( $param, $values, $range ){
+		list( $min, $max ) = $range;
+		foreach( $values as &$v ){
 			if( $v < $min ){
 				if( $max == PHP_INT_MAX )
 					throw new Exception( "The '{$param}' parameter must be greater than or equal to {$min}.", 422 );

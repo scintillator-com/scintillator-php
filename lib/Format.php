@@ -163,5 +163,51 @@ class Format{
 			return $parsed !== false;
 		};
 
+
+
+
+		self::$formats[ 'MongoDB::ObjectId' ] = new Format( 'MongoDB::ObjectId' );
+		self::$formats[ 'MongoDB::ObjectId' ]->format = function( $self, $val ){
+			if( $val instanceof MongoDB\BSON\ObjectId )
+				return $val;
+			else
+				return new MongoDB\BSON\ObjectId( $val );
+		};
+		self::$formats[ 'MongoDB::ObjectId' ]->isValid = function( $self, $val ){
+			if( $val instanceof MongoDB\BSON\ObjectId ){
+				return true;
+			}
+			else{
+				try{
+					new MongoDB\BSON\ObjectId( $val );
+					return true;
+				}
+				catch( Exception $_ ){
+					return false;
+				}
+			}
+		};
+
+		self::$formats[ 'MongoDB::UTCDateTime' ] = new Format( 'MongoDB::UTCDateTime' );
+		self::$formats[ 'MongoDB::UTCDateTime' ]->format = function( $self, $val ){
+			if( $val instanceof MongoDB\BSON\UTCDateTime )
+				return $val;
+			else
+				return new MongoDB\BSON\UTCDateTime( $val );
+		};
+		self::$formats[ 'MongoDB::UTCDateTime' ]->isValid = function( $self, $val ){
+			if( $val instanceof MongoDB\BSON\UTCDateTime ){
+				return true;
+			}
+			else{
+				try{
+					new MongoDB\BSON\UTCDateTime( $val );
+					return true;
+				}
+				catch( Exception $_ ){
+					return false;
+				}
+			}
+		};
   	}
 }

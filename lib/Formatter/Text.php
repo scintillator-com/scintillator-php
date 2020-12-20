@@ -1,41 +1,45 @@
 <?php
 final class Formatter_Text extends Formatter{
 	//From base:
-	//  $this->code = 200
+	//  $this->_cache
 
-	public final function emit( &$data, $code=null ){
-		$content = $this->format( $data );
-		if( 100 <= $code && $code < 600 ){
-			$this->code = $code;
+	public final function emit( &$content ){
+		$contentHeaders = $this->getHeaders( $content );
+		foreach( $contentHeaders as $k => $v ){
+			header( is_numeric( $k ) ? $v : "{$k}: {$v}" );
 		}
-		
-		header( 'Content-Type: text/plain', true, $code );
-		header( 'Content-Length: '.strlen( $content ) );
-		echo $content;
+		echo $this->_cache;
 	}
 
-	public final function format( &$data ){
-		if( $data instanceof Exception )
-			return $this->formatException( $data );
+	public final function format( &$content, $isCached=true ){
+		if( $isCached && isset( $this->_cache ) )
+			return $this->_cache;
+
+
+		if( $content instanceof Exception )
+			$formatted = self::_formatException( $content );
 		else
-			return "{$data}";
+			$formatted = self::_formatData( $content );
+
+		if( $isCached )
+			$this->_cache = $formatted;
+
+		return $formatted;
 	}
 
-	public final function formatData( &$data ){
+	public final function getHeaders( &$content, $isCached=true ){
+		$formatted = $this->format( $content, $isCached );
+
+		$contentHeaders[] = 'Content-Type: text/plain';
+		$contentHeaders[] = 'Content-Length: '. strlen( $formatted );
+		return $contentHeaders;
+	}
+
+	private static final function _formatData( &$content ){
 		return "{$data}";
 	}
 
-	public final function formatException( Exception &$exception ){
-		$code = $exception->getCode();
-		if( 400 <= $code && $code < 600 ){
-			$this->code = $code;
-			$message = $exception->getMessage();
-		}
-		else{
-			$this->code = 500;
-			$message = 'Internal Server Error';
-		}
-
-		return "{$this->code}: {$message}";
+	private static final function _formatException( Exception &$exception ){
+		return $exception->getCode() .': '. $exception->getMessage();
 	}
 }
