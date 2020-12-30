@@ -77,6 +77,8 @@ class Format{
   	}
 
 	private static function load(){
+		//TODO: https://www.php.net/manual/en/function.filter-var.php
+		
 		self::$formats[ 'alphanumeric' ] = new Format( 'alphanumeric' );
 		self::$formats[ 'alphanumeric' ]->format = function( $self, $val ){
 			return preg_replace( '/[[:^alnum:]]/', '', $val );
@@ -92,6 +94,17 @@ class Format{
 		self::$formats[ 'array' ]->isValid = function( $self, $val ){
 			return (is_array( $val) && !empty($val));
 		};
+
+
+		self::$formats[ 'base64' ] = new Format( 'base64' );
+		self::$formats[ 'base64' ]->format = function( $self, $val ){
+			return "{$val}";
+		};
+		self::$formats[ 'base64' ]->isValid = function( $self, $val ){
+			return preg_match( '/^[[:alnum:]\+\/]+$/', $val );
+		};
+
+
 
 		self::$formats[ 'boolean' ] = new Format( 'boolean' );
 		self::$formats[ 'boolean' ]->format = function( $self, $val ){
@@ -116,7 +129,7 @@ class Format{
 			return "{$val}";
 		};
 		self::$formats[ 'hex' ]->isValid = function( $self, $val ){
-			return preg_match( '/^([0-9a-f]+)$/i', $val );
+			return ctype_xdigit( $val );
 		};
 
 		self::$formats[ 'integer' ] = new Format( 'integer' );
@@ -124,7 +137,14 @@ class Format{
 			return (int)$val;
 		};
 		self::$formats[ 'integer' ]->isValid = function( $self, $val ){
-			return preg_match( '/^((0)|(-?[1-9]\d*))$/', $val );
+			//\Log::info( $val );
+			//return is_int( filter_var( $val, FILTER_VALIDATE_INT ) );
+
+			//$start = hrtime( true );
+			$res = preg_match( '/^((0)|(-?[1-9]\d*))$/', $val );
+			//$res = is_int( filter_var( $val, FILTER_VALIDATE_INT ) );
+			//\Log::info( 'Duration: '. ( hrtime( true ) - $start ) );
+			return $res;
 		};
 
 		self::$formats[ 'iso8601' ] = new ISO8601();
@@ -134,7 +154,7 @@ class Format{
 			return preg_replace( '/\D/', '', "{$val}" );
 		};
 		self::$formats[ 'numeric' ]->isValid = function( $self, $val ){
-			return ctype_digit( "{$val}" );
+			return is_numeric( $val ); //ctype_digit( "{$val}" );
 		};
 
 		self::$formats[ 'object' ] = new ObjectFormat();

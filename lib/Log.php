@@ -1,40 +1,17 @@
 <?php
 
-if( !defined( 'IP_DEBUG' ) ){
-	define( 'IP_DEBUG', 1 );
-}
-
-if( !defined( 'IP_INFO' ) ){
-	define( 'IP_INFO', 2 );
-}
-
-if( !defined( 'IP_WARN' ) ){
-	define( 'IP_WARN', 4 );
-}
-
-if( !defined( 'IP_WARNING' ) ){
-	define( 'IP_WARNING', 4 );
-}
-
-if( !defined( 'IP_ERROR' ) ){
-    define( 'IP_ERROR', 8 );
-}
-
-if( !defined( 'IP_CRIT' ) ){
-    define( 'IP_CRIT', 16 );
-}
-
-if( !defined( 'IP_CRITICAL' ) ){
-    define( 'IP_CRITICAL', 16 );
-}
-
-if( !defined( 'IP_ERROR_ALL' ) ){
-	define( 'IP_ERROR_ALL', IP_DEBUG | IP_INFO | IP_WARN | IP_ERROR | IP_CRIT );
-}
-
 class Log{
+	const DEBUG    = 1;
+	const INFO     = 2;
+	const WARN     = 4;
+	const WARNING  = 4;
+	const ERR      = 8;
+	const ERROR    = 8;
+	const CRIT     = 16;
+	const CRITICAL = 16;
+	const ALL      = 31;
 
-	public static $Level = 30; //default to IP_INFO | IP_WARN | IP_ERROR | IP_CRIT
+	public static $Level = 30; //default to INFO | WARN | ERROR | CRIT
 
 	private static function _log(){
 		$frames = debug_backtrace();
@@ -47,11 +24,11 @@ class Log{
 		$args = func_get_args();
 		$sev = array_shift( $args );
 		switch( $sev ){
-			case IP_DEBUG: $sevStr = 'DEBUG  '; break;
-			case IP_INFO:  $sevStr = 'INFO   '; break;
-			case IP_WARN:  $sevStr = 'WARNING'; break;
-			case IP_ERROR: $sevStr = 'ERROR  '; break;
-			default:       $sevStr = 'UNKNOWN'; break;
+			case self::DEBUG: $sevStr = 'DEBUG  '; break;
+			case self::INFO:  $sevStr = 'INFO   '; break;
+			case self::WARN:  $sevStr = 'WARNING'; break;
+			case self::ERROR: $sevStr = 'ERROR  '; break;
+			default:          $sevStr = 'UNKNOWN'; break;
 		}
 
 		$msg = array_shift( $args );
@@ -75,17 +52,17 @@ class Log{
 	}
 
     public static function debug( $msg ){
-		if( self::$Level & IP_DEBUG ){
+		if( self::$Level & self::DEBUG ){
 			$args = func_get_args();
-			array_unshift( $args, IP_DEBUG );
+			array_unshift( $args, self::DEBUG );
 			call_user_func_array( array( 'Log', '_log' ), $args );
 		}
     }
 
     public static function error( $msg ){
-		if( self::$Level & IP_ERROR ){
+		if( self::$Level & self::ERROR ){
 			$args = func_get_args();
-			array_unshift( $args, IP_ERROR );
+			array_unshift( $args, self::ERROR );
 			call_user_func_array( array( 'Log', '_log' ), $args );
 		}
     }
@@ -94,31 +71,31 @@ class Log{
 		switch( $lvlStr ){
 			case 'debug':
 			case 'ok':
-				return IP_DEBUG;
+				return self::DEBUG;
 
 			case 'info':
-				return IP_INFO;
+				return self::INFO;
 
 			case 'warn':
 			case 'warning':
-				return IP_WARN;
+				return self::WARN;
 
 			case 'error':
-				return IP_ERROR;
+				return self::ERROR;
 
 			case 'critical':
-				return IP_CRIT;
+				return self::CRIT;
 
 			default:
 				Log::error( "Unrecognized error level: {$lvlStr}" );
-				return $default ? $default : IP_INFO;
+				return $default ? $default : self::INFO;
 		}
 	}
 
     public static function info( $msg ){
-		if( self::$Level & IP_INFO ){
+		if( self::$Level & self::INFO ){
 			$args = func_get_args();
-			array_unshift( $args, IP_INFO );
+			array_unshift( $args, self::INFO );
 			call_user_func_array( array( 'Log', '_log' ), $args );
 		}
     }
@@ -131,17 +108,17 @@ class Log{
     }
 
     public static function warn( $msg ){
-		if( self::$Level & IP_WARN ){
+		if( self::$Level & self::WARN ){
 			$args = func_get_args();
-			array_unshift( $args, IP_WARN );
+			array_unshift( $args, self::WARN );
 			call_user_func_array( array( 'Log', '_log' ), $args );
 		}
     }
 
     public static function warning( $msg ){
-		if( self::$Level & IP_WARN ){
+		if( self::$Level & self::WARN ){
 			$args = func_get_args();
-			array_unshift( $args, IP_WARN );
+			array_unshift( $args, self::WARN );
 			call_user_func_array( array( 'Log', '_log' ), $args );
 		}
     }

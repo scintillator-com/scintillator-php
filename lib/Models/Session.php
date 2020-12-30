@@ -13,30 +13,23 @@ class Session extends MongoModel{
 	//createIndex( $keys = array( "token"   => 1 ), $options = array( "name": "token",   "sparse": true, "unique": true ) );
 	//createIndex( $keys = array( "user_id" => 1 ), $options = array( "name": "user_id", "sparse": true ) );
 
-	private $_id;
+	//BASE:
+	//protected $_id;
+
 	public $created;
-	public $disabled;
+	public $enabled;
 	public $expires;
 	public $org_id;
 	public $token;
 	public $user_id;
 
-	public final function __construct( iterable $data=null ){
-		if( $data ){
-			foreach( $data as $key => $val ){
-				if( property_exists( $this, $key ) )
-					$this->{$key} = $val;
-			}
-		}
-	}
-
-	public final static function create( $user ){
+	public final static function createForUser( $user ){
 		$session = new \Models\Session(array(
-			'created'  => new \MongoDB\BSON\UTCDateTime(),
-			'disabled' => false,
-			'org_id'   => $user->org_id,
-			'token'    => bin2hex( random_bytes( 24 ) ),
-			'user_id'  => $user->getID(),
+			'created' => new \MongoDB\BSON\UTCDateTime(),
+			'enabled' => true,
+			'org_id'  => $user->org_id,
+			'token'   => bin2hex( random_bytes( 24 ) ),
+			'user_id' => $user->getID()
 		));
 
 		$config = \Configuration::Load();
@@ -79,6 +72,10 @@ class Session extends MongoModel{
 		return $query;
 	}
 
+	public final function getID(){
+		return $this->_id;
+	}
+
 	public final function isExpired(){
 		return $this->expires->toDateTime()->getTimestamp() < time();
 	}
@@ -100,11 +97,11 @@ class Session extends MongoModel{
 
 	public final function validate(){
 		static $required = array(
-			'created'  => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
-			'disabled' => array( 'format' => 'boolean', 'scalar' ),
-			'expires'  => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
-			'token'    => array( 'format' => 'hex', 'length' => array( 1, 255 ), 'scalar' ),
-			'user_id'  => array( 'format' => 'MongoDB::ObjectId', 'scalar' )
+			'created' => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
+			'enabled' => array( 'format' => 'boolean', 'scalar' ),
+			'expires' => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
+			'token'   => array( 'format' => 'hex', 'length' => array( 1, 255 ), 'scalar' ),
+			'user_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' )
 		);
 
 		static $optional = array(

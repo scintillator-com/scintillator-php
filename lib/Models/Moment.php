@@ -13,6 +13,9 @@ class Moment extends MongoModel{
 	//createIndex( $keys = array( "response.content_type" => 1 }, $options = array( "name": "response.content_type", "sparse": true ) );
 	//createIndex( $keys = array( "response.status_code"  => 1 }, $options = array( "name": "response.status_code",  "sparse": true ) );
 
+	//BASE:
+	//protected $_id;
+
 	public final function validate(){
 		return true;
 	}

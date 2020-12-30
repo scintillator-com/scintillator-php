@@ -67,6 +67,9 @@ final class Request{
 		if( array_key_exists( 'DEBUG', $_GET ) )
 			return true;
 
+		if( array_key_exists( 'DEBUG', $_POST ) )
+			return true;
+
 		if( is_array( $this->data ) && array_key_exists( 'DEBUG', $this->data ) )
 			return true;
 
@@ -98,11 +101,14 @@ final class Request{
 			$headers = getallheaders();
 		}
 		else{
-			$headers[ 'Accept' ] = $_SERVER[ 'HTTP_ACCEPT' ];
-			$headers[ 'Content-Type' ] = $_SERVER[ 'CONTENT_TYPE' ];
-			if( !empty( $_SERVER[ 'REDIRECT_HTTP_AUTHORIZATION' ] ) ){
+			if( !empty( $_SERVER[ 'HTTP_ACCEPT' ] ) )
+				$headers[ 'Accept' ] = $_SERVER[ 'HTTP_ACCEPT' ];
+
+			if( !empty( $_SERVER[ 'CONTENT_TYPE' ] ) )
+				$headers[ 'Content-Type' ] = $_SERVER[ 'CONTENT_TYPE' ];
+
+			if( !empty( $_SERVER[ 'REDIRECT_HTTP_AUTHORIZATION' ] ) )
 				$headers[ 'Authorization' ] = $_SERVER[ 'REDIRECT_HTTP_AUTHORIZATION' ];
-			}
 		}
 
 		$request->setHeaders( $headers );

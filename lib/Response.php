@@ -15,12 +15,10 @@ final class Response{
 		return $this;
 	}
 
-	public final function cors( $methods, $origin='*' ){
-		$this->cors = array(
-			'headers' => array(),
-			'methods' => (array)$methods,
-			'origin'  => $origin
-		);
+	public final function cors( $methods, $headers=array(), $origin='*' ){
+		$this->cors['methods'] = (array)$methods;
+		$this->cors['headers'] = (array)$headers;
+		$this->cors['origin']  = $origin;
 		return $this;
 	}
 
@@ -104,10 +102,10 @@ final class Response{
 				header( "Access-Control-Allow-Methods: {$methods}" );
 			}
 
-			//if( !empty( $this->cors['headers'] ) ){
-			//	$headers = implode( ',', $this->cors['headers'] );
-			//	header( "Access-Control-Allow-Headers: {$headers}" );
-			//}
+			if( !empty( $this->cors['headers'] ) ){
+				$headers = implode( ',', $this->cors['headers'] );
+				header( "Access-Control-Allow-Headers: {$headers}" );
+			}
 
 			if( !empty( $this->cors['origin'] ) ){
 				header( "Access-Control-Allow-Origin: {$this->cors['origin']}" );

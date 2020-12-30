@@ -13,10 +13,14 @@ trait Mongo{
 		return $client;
 	}
 
+	protected static final function insertedOne( \MongoDB\InsertOneResult $result ){
+		return $result->isAcknowledged() && $result->getInsertedCount() === 1;
+	}
+
 	protected final function selectDB( $db ){
 		return $this->selectDatabase( $db );
 	}
-	
+
 	protected final function selectDatabase( $db ){
 		static $dbs = array();
 		if( empty( $dbs[ $db ] ) ){
@@ -40,5 +44,9 @@ trait Mongo{
 			$collections[ $this->dbName ][ $col ] = $this->db->selectCollection( $col );
 		}
 		return $collections[ $this->dbName ][ $col ];
+	}
+
+	protected static final function updatedOne( \MongoDB\UpdateResult $result ){
+		return $result->isAcknowledged() && $result->getModifiedCount() === 1;
 	}
 }

@@ -1,19 +1,18 @@
 <?php
 
 class Formatter_Empty extends Formatter{
-	//From base:
-	$this->code = 204;
-
 	public final function emit( &$data, $code=null ){
-		if( $code )
-			$this->code = $code;
-
-		header( 'HTTP/1.1 204 No Content', true, $this->code );
+		$contentHeaders = $this->getHeaders( $content );
+		foreach( $contentHeaders as $k => $v ){
+			header( is_numeric( $k ) ? $v : "{$k}: {$v}" );
+		}
 	}
 
-	public final function format( &$data ){}
+	public final function format( &$content, $isCached=true ){
+		return null;
+	}
 
-	public final function formatData( &$data ){}
-
-	public final function formatException( Exception &$exception ){}
+	public final function getHeaders( &$content, $isCached=true ){
+		return array();
+	}
 }

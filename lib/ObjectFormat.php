@@ -65,7 +65,7 @@ class ObjectFormat extends Format{
 
 	public function isValidScalar( $value ){
 		try{
-			RequestValidator::validate( $value, $this->required, $this->optional );
+			\Validator::validate( $value, $this->required, $this->optional );
 			return true;
 		}
 		catch( Exception $ex ){
@@ -81,13 +81,13 @@ class ObjectFormat extends Format{
 			}
 		}
 		else{
-			RequestValidator::validate( $values, $this->required, $this->optional );
+			\Validator::validate( $values, $this->required, $this->optional );
 		}
 
 		return true;
 	}
 	
 	public function throwValidationError( $param, $value ){
-		RequestValidator::validate( $value, $this->required, $this->optional, "{$param}" );
+		\Validator::validate( $value, $this->required, $this->optional, "{$param}" );
 	}
 }

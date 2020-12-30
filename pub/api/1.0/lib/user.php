@@ -6,12 +6,13 @@ final class user extends Route{
 	
 	public final function __construct( Request $request ){
 		parent::__construct( $request );
-		$this->response->cors( 'POST' );
+		$this->response->cors( 'POST', array( 'Accept,Content-Type' ));
 	}
 
 	public final function POST(){
 		$this->json();
 
+		$creator = null;
 		if( !empty( $this->request->headers['authorization'] ) ){
 			$creator = $this->authorize()->getSessionUser();
 		}
@@ -30,11 +31,11 @@ final class user extends Route{
 		$data = $this->validate();
 
 		//TODO: extra PW validation
-		//$this->validatePassword( $data['password'] );
+		//$this->_validatePassword( $data['password'] );
 
 		$user = new \Models\User( $data );
 		$user->algorithm  = 'argon2id';
-		$user->client_key = bin2hex( random_bytes( 16 ) );
+		$user->client_key = base64_encode( random_bytes( 24 ) ); //32 base64 chars
 		$user->created    = $user->modified = new \MongoDB\BSON\UTCDateTime();
 		$user->enabled    = true;
 		$user->hash       = password_hash( $data['password'], PASSWORD_ARGON2ID );
@@ -47,44 +48,41 @@ final class user extends Route{
 		}
 
 		$user->validate();
-		$result = $this->_createUser( $user );
-		if( $result->isAcknowledged() && $result->getInsertedCount() === 1 ){
-			$user->setID( $result );
+		$this->_createUser( $user, $userResult );
+		$user->setID( $userResult );
 
-			$session = \Models\Session::create( $user )->validate();
-			$result = $this->selectCollection( 'sessions' )->insertOne( $session );
-			if( !( $result->isAcknowledged() && $result->getInsertedCount() === 1 ) ){
-				\Log::warning( $result );
-			}
+		$session = \Models\Session::createForUser( $user )->validate();
+		//TODO: $this->_createSession( $session, $sessResult );
+		$sessResult = $this->selectCollection( 'sessions' )->insertOne( $session );
+		if( !self::insertedOne( $sessResult ) ){
+			\Log::warning( $sessResult );
+		}
 
-			if( $creator ){
-				//TODO: add to org's users
+		if( $creator ){
+			//TODO: add to org's users
 
 
-				$this->response->emit(array(
-					'authorization' => null,
-					'user' => array(
-						'client_key' => $user->client_key
-					)
-				), 201 );
-			}
-			else{
-				$this->response->emit(array(
-					'authorization' => \Models\Session::view( $session ),
-					'user' => array(
-						'client_key' => $user->client_key
-					)
-				), 201 );
-			}
+			$this->response->emit(array(
+				'authorization' => null,
+				'user' => array(
+					'client_key' => $user->client_key
+				)
+			), 201 );
 		}
 		else{
-			throw new Exception( 'Internal Server Error', 500 );
+			$this->response->emit(array(
+				'authorization' => \Models\Session::view( $session ),
+				'user' => array(
+					'client_key' => $user->client_key
+				)
+			), 201 );
 		}
 	}
 
-	private final function _createUser( \Models\User $user ){
+	private final function _createUser( \Models\User $user, &$userResult ){
 		try{
-			return $this->selectCollection( 'users' )->insertOne( $user );
+			$userResult = $this->selectCollection( 'users' )->insertOne( $user );
+			\Log::debug( "User created: {$user->username}" );
 		}
 		catch( \MongoDB\Driver\Exception\BulkWriteException $ex ){
 			if( $ex->getCode() === 11000 ){
@@ -100,5 +98,10 @@ final class user extends Route{
 			\Log::error( "{$ex}" );
 			throw new Exception( 'Internal Server Error', 500, $ex );
 		}
+
+		if( self::insertedOne( $userResult ) )
+			return null;
+		else
+			throw new Exception( 'Internal Server Error', 500 );
 	}
 }

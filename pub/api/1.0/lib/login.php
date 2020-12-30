@@ -5,7 +5,7 @@ final class login extends Route {
 
 	public final function __construct( Request $request ){
 		parent::__construct( $request );
-		$this->response->cors( 'POST' );
+		$this->response->cors( 'POST', array( 'Accept,Content-Type' ));
 	}
 
 	public final function POST(){
@@ -21,7 +21,8 @@ final class login extends Route {
 		$user = $this->validateUser( $data );
 		$this->validateOrg( $user );
 		$query = array( '_id' => $user->getID() );
-		$this->selectCollection( 'users' )->updateOne( $query, \Models\User::onLogin( $user ) );
+		$userResult = $this->selectCollection( 'users' )->updateOne( $query, \Models\User::onLogin( $user ) );
+		self::updatedOne( $userResult );
 
 		if( $this->reuseSession( $user, $session ) ){
 			$this->response->emit( \Models\Session::view( $session ) );
@@ -34,10 +35,10 @@ final class login extends Route {
 
 	private final function createSession( $user, &$session ){
 		\Log::debug( "Creating new token for user" );
-		$session = \Models\Session::create( $user );
-		$result = $this->selectCollection( 'sessions' )->insertOne( $session );
-		if( !( $result->isAcknowledged() && $result->getInsertedCount() === 1 ) ){
-			\Log::warning( $result );
+		$session = \Models\Session::createForUser( $user );
+		$sessResult = $this->selectCollection( 'sessions' )->insertOne( $session );
+		if( !self::insertedOne( $sessResult ) ){
+			\Log::warning( $sessResult );
 		}
 		return true;
 	}

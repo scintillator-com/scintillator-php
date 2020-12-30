@@ -6,7 +6,7 @@ final class history extends Route {
 
 	public final function __construct( Request $request ){
 		parent::__construct( $request );
-		$this->response->cors( 'GET' );
+		$this->response->cors( 'GET', array( 'Accept,Authorization,Content-Type' ));
 	}
 
 	public final function GET(){

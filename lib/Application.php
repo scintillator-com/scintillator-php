@@ -45,12 +45,12 @@ final class Application{
 				require( $path );
 				$lastClass = implode( '_', $pieces );
 				if( !class_exists( $lastClass ) ){
-					Log::warning( "API class not found: {$lastClass}, attempting to use most recent" );
+					\Log::warning( "API class not found: {$lastClass}, attempting to use most recent" );
 					$classes = get_declared_classes();
 					array_splice( $classes, 0, $nClassesBefore );
 
 					$lastClass = array_pop( $classes );
-					Log::warning( "Most recent class: {$lastClass}" );
+					\Log::warning( "Most recent class: {$lastClass}" );
 				}
 
 				self::$route = new $lastClass( $request );
@@ -68,7 +68,7 @@ final class Application{
 	
 	public static final function processRoute(){
 		self::$route->process();
-		//Log::info( 'Duration: '.(microtime( true ) - self::$start));
-		Log::info( 'Duration: '.(hrtime( true ) - self::$start)/1000000000);
+		//\Log::info( 'Duration: '.(microtime( true ) - self::$start));
+		\Log::info( 'Duration: '.(hrtime( true ) - self::$start)/1000000000);
 	}
 }

@@ -12,7 +12,7 @@ trait Authorized{
 		if( strncasecmp( $token, 'bearer', 6 ) === 0 )
 			$token = trim( substr( $token, 6 ) );
 
-		$session = $this->selectCollection( 'sessions' )->findOne(\Models\Session::findByToken( $token ));
+		$session = $this->selectCollection( 'sessions' )->findOne( \Models\Session::findByToken( $token ) );
 		if( $session ){
 			$this->session = new \Models\Session( $session );
 			$this->validateSession();
@@ -68,7 +68,7 @@ trait Authorized{
 	}
 
 	private final function validateSession(){
-		if( $this->session->disabled ){
+		if( !$this->session->enabled ){
 			\Log::warning( "Disabled session: {$token}" );
 			throw new Exception( "Session Invalid", 401 );
 		}

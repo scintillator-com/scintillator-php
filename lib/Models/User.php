@@ -7,7 +7,9 @@ class User extends MongoModel{
 	//createIndex( $keys = array( "email"      => 1 ), $options = array( "name": "email",      "sparse": true, "unique": true ) );
 	//createIndex( $keys = array( "username"   => 1 ), $options = array( "name": "username",   "sparse": true, "unique": true ) );
 
-	private $_id;
+	//BASE:
+	//protected $_id;
+
 	public $algorithm;
 	public $client_key;
 	public $created;
@@ -54,7 +56,7 @@ class User extends MongoModel{
 	public final function validate(){
 		static $required = array(
 			'algorithm'  => array( 'format' => 'enum', 'enum' => array( 'argon2id' ), 'scalar' ),
-			'client_key' => array( 'format' => 'hex', 'scalar' ),
+			'client_key' => array( 'format' => 'base64', 'scalar' ),
 			'created'    => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
 			'email'      => array( 'format' => 'string', 'length' => array( 6, 255 ), 'scalar' ),
 			'enabled'    => array( 'format' => 'boolean', 'scalar' ),

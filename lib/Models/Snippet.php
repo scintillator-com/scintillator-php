@@ -5,7 +5,8 @@ namespace Models;
 class Snippet extends MongoModel{
 	//createIndex( $keys = array( "moment_id" => 1 }, $options = array( "name": "moment_id", "sparse": true ) );
 
-	private $_id;
+	//BASE:
+	//protected $_id;
 
 	public $config;
 	public $created;
@@ -14,15 +15,6 @@ class Snippet extends MongoModel{
 	public $moment_id;
 	public $views;
 	public $likes;
-
-	public final function __construct( iterable $data=null ){
-		if( $data ){
-			foreach( $data as $key => $val ){
-				if( property_exists( $this, $key ) )
-					$this->{$key} = $val;
-			}
-		}
-	}
 
 	public final function validate(){
 		static $required;
@@ -50,7 +42,7 @@ class Snippet extends MongoModel{
 
 
 			$this->required = array(
-				'moment_id' => array( 'format' => 'hex', 'scalar' ),
+				'moment_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
 				'config'    => array( 'format' => 'object', 'object' => $config ),
 				'formatter' => array( 'format' => 'object', 'object' => $formatter )
 			);
