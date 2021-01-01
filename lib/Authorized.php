@@ -15,10 +15,10 @@ trait Authorized{
 		$session = $this->selectCollection( 'sessions' )->findOne( \Models\Session::findByToken( $token ) );
 		if( $session ){
 			$this->session = new \Models\Session( $session );
-			$this->validateSession();
-			$this->validateUser();
+			$this->validateSession( $token );
+			$this->validateUser( $token );
 			if( $this->session->org_id )
-				$this->validateOrg();
+				$this->validateOrg( $token );
 
 			//TODO:
 			//$this->rateLimit();
@@ -50,7 +50,7 @@ trait Authorized{
 		return $user;
 	}
 
-	private final function validateOrg(){
+	private final function validateOrg( $token ){
 		$org = $this->getSessionOrg();
 		if( $org ){
 			if( $org->enabled ){
@@ -67,7 +67,7 @@ trait Authorized{
 		}
 	}
 
-	private final function validateSession(){
+	private final function validateSession( $token ){
 		if( !$this->session->enabled ){
 			\Log::warning( "Disabled session: {$token}" );
 			throw new Exception( "Session Invalid", 401 );
@@ -87,7 +87,7 @@ trait Authorized{
 		}
 	}
 
-	private final function validateUser(){
+	private final function validateUser( $token ){
 		$user = $this->getSessionUser();
 		if( $user ){
 			if( $user->enabled ){

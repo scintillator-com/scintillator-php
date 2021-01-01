@@ -1,19 +1,19 @@
 <?php
 
 final class snippet extends Route {
+	use \Authorized;
 	use \Mongo;
 
 	public final function __construct( Request $request ){
 		parent::__construct( $request );
-		$this->response->cors(array( 'POST', 'PUT' ));
+		$this->response->cors(array( 'POST','PUT' ), array('Accept,Authorization,Content-Type'));
 	}
 
 	public final function POST(){
-		$this->authenticate()->json();
+		$this->json();
 
 		$config = new stdClass();
-		$config->required = array(
-		);
+		$config->required = array();
 		$config->optional = array(
 			"method"        => array( 'format' => 'string', 'scalar' ),
 			"decode"        => array( 'format' => 'boolean', 'scalar' ),
@@ -41,18 +41,20 @@ final class snippet extends Route {
 		$this->optional = array();
 		$data = $this->validate();
 
-		$snippet = new Snippet( $data );
-		$result = $this->selectCollection( 'snippets' )->insertOne( $snippet );
-		$id = $result->getInsertedId();
 
-		$this->response->code = 201;
-		return array(
-			'snippet_id' => "{$id}"
-		);
+		//TODO: optional, depending on Moment
+		$this->authorize();
+
+
+		$snippet = new \Models\Snippet( $data );
+		//$snippet->validate();
+		$result = $this->selectCollection( 'snippets' )->insertOne( $snippet );
+		$snippet_id = $result->getInsertedId();
+		$this->response->emit( array( 'snippet_id' => "{$snippet_id}" ), 201 );
 	}
 
 	public final function PUT(){
-		$this->authenticate()->json();
+		$this->json();
 
 		$config = new stdClass();
 		$config->required = array();
@@ -80,18 +82,24 @@ final class snippet extends Route {
 		);
 		$this->optional = array();
 		$data = $this->validate();
-		$snippet = new Snippet( $data );
 		
+		
+		//TODO: optional, depending on Moment
+		$this->authorize();
+		
+		$snippet = new Snippet( $data );
 		$query = array(
-			'_id' => new MongoDB\BSON\ObjectId( $data['snippet_id' ] )
+			'_id' => $data['snippet_id' ]
 		);
 
 		$result = $this->selectCollection( 'snippets' )->updateOne( $query, array( '$set' => $snippet ));
-		return array(
-			'snippet_id'     => "{$query['_id']}",
+		$response = array(
+			'snippet_id'     => "{$data['snippet_id' ]}",
 			'is_acknowledged' => $result->isAcknowledged(),
 			'matches' => $result->getMatchedCount(),
 			'updated' => $result->getModifiedCount()
 		);
+		
+		$this->response->emit( $response, 201 );
 	}
 }

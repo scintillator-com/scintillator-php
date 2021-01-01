@@ -30,6 +30,9 @@ if( !$snippet ){
 	exit;
 }
 
+if( !empty( $_GET['library'] ) ){
+	$snippet->formatter->library = $_GET['library'];
+}
 
 $query['_id'] = $snippet->moment_id;
 $options = array(

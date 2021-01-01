@@ -81,7 +81,7 @@ class Session extends MongoModel{
 	}
 
 	public final function isStarted(){
-		return $this->created->toDateTime()->getTimestamp() < time();
+		return $this->created->toDateTime()->getTimestamp() <= time();
 	}
 
 	public final function isValidDuration(){

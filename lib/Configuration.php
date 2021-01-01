@@ -16,32 +16,36 @@ final class Configuration{
 		}
 	}
 
-	public static final function Load( $hostNames = array() ){
+	public static final function Load( $hostNames=array() ){
 		static $config;
 		if( !empty( $config ) )
 			return $config;
 
 
 		$config = new Configuration();
-		$configPath = LIB . DS .'configs'. DS .'default.php';
-		if( file_exists( $configPath ) ){
-			$config->_include( $configPath );
-		}
+		//$configPath = LIB . DS .'configs'. DS .'default.php';
+		//if( file_exists( $configPath ) ){
+		//	$config->_include( $configPath );
+		//}
 
-		$hostNames = (array)$hostNames;
+		if( is_scalar( $hostNames ) )
+			$hostNames = (array)$hostNames;
+
 		$hostNames[] = gethostname();
 		//$hostNames[] = php_uname('n');
-		if( !empty( $_SERVER[ 'HTTP_HOST' ] ) ){
+		if( !empty( $_SERVER[ 'HTTP_HOST' ] ) )
 			$hostNames[] = $_SERVER[ 'HTTP_HOST' ];
-		}
-		foreach( $hostNames as $hostName ){
-			$hostConfigPath = LIB . DS .'configs'. DS . $hostName .'.php';
+
+		$basePath = LIB . DS .'configs'. DS;
+		//$start = hrtime( true );
+		foreach( $hostNames as &$hostName ){
+			$hostConfigPath = "{$basePath}{$hostName}.php";
 			if( file_exists( $hostConfigPath ) ){
 				$config->_require( $hostConfigPath );
 				break;
 			}
 		}
-
+		//\Log::info( 'Config load: '. (hrtime( true ) - $start) .'ns');
 		return $config;
 	}
 

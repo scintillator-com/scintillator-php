@@ -8,8 +8,14 @@ abstract class Snippet_Formatter{
 	}
 	
 	public static function create( &$snippet ){
-		if( $snippet->formatter->language === 'javascript' && $snippet->formatter->library === 'fetch' ){
+		if( $snippet->formatter->language === 'javascript' && $snippet->formatter->library === 'axios' ){
+			return new Snippet_Formatter_JS_Axios( $snippet );
+		}
+		else if( $snippet->formatter->language === 'javascript' && $snippet->formatter->library === 'fetch' ){
 			return new Snippet_Formatter_JS_Fetch( $snippet );
+		}
+		else if( $snippet->formatter->language === 'javascript' && $snippet->formatter->library === 'jquery' ){
+			return new Snippet_Formatter_JS_JQuery( $snippet );
 		}
 		else{
 			throw new Exception( "Not Implemented: {$snippet->formatter->language}-{$snippet->formatter->library}" );
@@ -34,7 +40,7 @@ abstract class Snippet_Formatter{
 		return $headers;
 	}
 
-	protected function getURL( &$moment ){
+	protected function getURL( &$moment, $appendQuery=false ){
 		$url = "{$moment->request->scheme}://{$moment->request->host}";
 		if( $moment->request->scheme === 'http' && $moment->request->port !== 80 ){
 			$url .= ":{$moment->request->port}";
@@ -45,7 +51,7 @@ abstract class Snippet_Formatter{
 
 		$url .= "{$moment->request->path}";
 
-		if( !empty( $this->snippet->config->query_params ) ){
+		if( $appendQuery && !empty( $this->snippet->config->query_params ) ){
 			$params = array();
 			$findParams = array_map( 'strtolower', (array)$this->snippet->config->query_params );
 			foreach( $moment->request->query_data as &$kvp ){

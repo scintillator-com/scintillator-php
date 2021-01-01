@@ -20,13 +20,22 @@ final class Snippet_Formatter_JS_Fetch extends Snippet_Formatter{
 				}
 				$writer->writeLine();
 			}
+			
+			//$query = null;
+			//if( !empty( (array)$this->snippet->config->query_params ) ){
+			//	//TODO:
+			//	//URLSearchParams object.
+			//	//https://developer.mozilla.org/en-US/docs/Web/API/URL/searchParams
+			//	throw new Exception( 'Not implemented: query_params' );
+			//}
+			
 
 			$body = null;
 			if( !empty( (array)$this->snippet->config->body_params ) )
 				throw new Exception( 'Not implemented: body_params' );
 
 
-			$url = $this->getURL( $moment );
+			$url = $this->getURL( $moment, true );
 
 
 			$suffix = '';
@@ -34,7 +43,7 @@ final class Snippet_Formatter_JS_Fetch extends Snippet_Formatter{
 				$suffix = ',';
 			}
 
-			$writer->writeLine( "const options = {" )
+			$writer->writeLine( "const init = {" )
 				->indent()
 				->writeLine( "'method': '{$moment->request->method}'{$suffix}" );
 			
@@ -56,7 +65,7 @@ final class Snippet_Formatter_JS_Fetch extends Snippet_Formatter{
 			if( $this->snippet->config->method === 'async' ){
 				$writer->writeLine( "try{" )
 					->indent()
-					->writeLine( "const response = fetch( '{$url}', options );" )
+					->writeLine( "const response = fetch( '{$url}', init );" )
 					->writeLine( "const response_text = await response.text();" )
 					->writeLine( "console.log( response_text );" )
 					->writeLine( "return response_text;" )
@@ -76,7 +85,7 @@ final class Snippet_Formatter_JS_Fetch extends Snippet_Formatter{
 					//TODO: check content type
 				}
 
-				$writer->writeLine( "fetch( '{$url}', options );" )
+				$writer->writeLine( "fetch( '{$url}', init );" )
 					->indent()
 					->writeLine( ".then( response => response.text() )" )
 					->writeLine( ".then( response_text => {" )
