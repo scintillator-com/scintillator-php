@@ -36,7 +36,7 @@ final class Formatter_Text extends Formatter{
 	}
 
 	private static final function _formatData( &$content ){
-		return "{$data}";
+		return "{$content}";
 	}
 
 	private static final function _formatException( Exception &$exception ){

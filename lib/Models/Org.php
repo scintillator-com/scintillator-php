@@ -13,7 +13,7 @@ class Org extends MongoModel{
 	public $client_key;
 	public $created;
 	public $created_by;
-	public $enabled;
+	public $is_enabled;
 	public $modified;
 	public $name;
 	public $plan;
@@ -34,7 +34,7 @@ class Org extends MongoModel{
 				'client_key' => array( 'format' => 'base64', 'scalar' ),
 				'created'    => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
 				'created_by' => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
-				'enabled'    => array( 'format' => 'boolean', 'scalar' ),
+				'is_enabled'    => array( 'format' => 'boolean', 'scalar' ),
 				'modified'   => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
 				'name'       => array( 'format' => 'string', 'length' => array( 1, 255 ), 'scalar' ),
 				'plan'       => array( 'format' => 'object', 'object' => (object)array(

@@ -22,6 +22,29 @@ final class Response{
 		return $this;
 	}
 
+	//TODO: chunked...
+	public final function dump( $content ){
+		//emit regular content
+		try{
+			ob_start();
+			dump( $content );
+			$buffer = ob_get_clean();
+
+			$this->setContentType( 'text' );
+			$contentHeaders = $this->formatter->getHeaders( $buffer );
+			$this->_emitHeaders( $contentHeaders, 200 );
+			$this->_emitContent( $buffer );
+		}
+		catch( Exception $ex ){
+			//TODO: clone?  track old response?
+			\Log::error( "Exception during dump( content ): {$ex}" );
+			$this->formatter->clearCache();
+			$this->emitException( $ex );
+		}
+
+		exit;
+	}
+
 	public final function emit( $content, $code=200 ){
 		//emit regular content
 		try{

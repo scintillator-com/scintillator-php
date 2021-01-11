@@ -53,7 +53,7 @@ trait Authorized{
 	private final function validateOrg( $token ){
 		$org = $this->getSessionOrg();
 		if( $org ){
-			if( $org->enabled ){
+			if( $org->is_enabled ){
 				//ok
 			}
 			else{
@@ -68,7 +68,7 @@ trait Authorized{
 	}
 
 	private final function validateSession( $token ){
-		if( !$this->session->enabled ){
+		if( !$this->session->is_enabled ){
 			\Log::warning( "Disabled session: {$token}" );
 			throw new Exception( "Session Invalid", 401 );
 		}
@@ -90,7 +90,7 @@ trait Authorized{
 	private final function validateUser( $token ){
 		$user = $this->getSessionUser();
 		if( $user ){
-			if( $user->enabled ){
+			if( $user->is_enabled ){
 				//ok
 			}
 			else{

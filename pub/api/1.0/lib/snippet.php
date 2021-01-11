@@ -15,8 +15,8 @@ final class snippet extends Route {
 		$config = new stdClass();
 		$config->required = array();
 		$config->optional = array(
-			"method"        => array( 'format' => 'string', 'scalar' ),
 			"decode"        => array( 'format' => 'boolean', 'scalar' ),
+			"method"        => array( 'format' => 'string', 'scalar' ),
 			"body_params"   => array( 'format' => 'string', 'default' => array(), 'array' ),
 			"header_params" => array( 'format' => 'string', 'default' => array(), 'array' ),
 			"query_params"  => array( 'format' => 'string', 'default' => array(), 'array' )
@@ -42,12 +42,15 @@ final class snippet extends Route {
 		$data = $this->validate();
 
 
+
 		//TODO: optional, depending on Moment
 		$this->authorize();
 
 
 		$snippet = new \Models\Snippet( $data );
-		//$snippet->validate();
+		//sets created and modified
+		$snippet->validate();
+
 		$result = $this->selectCollection( 'snippets' )->insertOne( $snippet );
 		$snippet_id = $result->getInsertedId();
 		$this->response->emit( array( 'snippet_id' => "{$snippet_id}" ), 201 );
@@ -88,13 +91,27 @@ final class snippet extends Route {
 		$this->authorize();
 		
 		$snippet = new Snippet( $data );
+		$snippet->validate();
+
 		$query = array(
 			'_id' => $data['snippet_id' ]
 		);
 
-		$result = $this->selectCollection( 'snippets' )->updateOne( $query, array( '$set' => $snippet ));
+		$update = array(
+			'$set'         => array(
+				'moment_id' => $snippet->moment_id,
+				'config'    => $snippet->config,
+				'formatter' => $snippet->formatter
+			),
+			'$currentDate' => array(
+				'modified' => array(
+					'$type' => 'date'
+				)
+			)
+		);
+		$result = $this->selectCollection( 'snippets' )->updateOne( $query, $update );
 		$response = array(
-			'snippet_id'     => "{$data['snippet_id' ]}",
+			'snippet_id'     => "{$data['snippet_id']}",
 			'is_acknowledged' => $result->isAcknowledged(),
 			'matches' => $result->getMatchedCount(),
 			'updated' => $result->getModifiedCount()

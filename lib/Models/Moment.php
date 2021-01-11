@@ -3,15 +3,17 @@
 namespace Models;
 
 class Moment extends MongoModel{
-	//createIndex( $keys = array( "request.created" => 1 }, $options = array( "name": "request.created", "sparse": true ) );
-	//createIndex( $keys = array( "request.method"  => 1 }, $options = array( "name": "request.method",  "sparse": true ) );
-	//createIndex( $keys = array( "request.scheme"  => 1 }, $options = array( "name": "request.scheme",  "sparse": true ) );
-	//createIndex( $keys = array( "request.host"    => 1 }, $options = array( "name": "request.host",    "sparse": true ) );
-	//createIndex( $keys = array( "request.path"    => 1 }, $options = array( "name": "request.path",    "sparse": true ) );
-	//createIndex( $keys = array( "request.content_type" => 1 }, $options = array( "name": "request.content_type", "sparse": true ) );
+	//createIndex( $keys = array( "request.created"        => 1 }, $options = array( "name": "request.created", "sparse": true ) );
+	//createIndex( $keys = array( "request.method"         => 1 }, $options = array( "name": "request.method",  "sparse": true ) );
+	//createIndex( $keys = array( "request.scheme"         => 1 }, $options = array( "name": "request.scheme",  "sparse": true ) );
+	//createIndex( $keys = array( "request.host"           => 1 }, $options = array( "name": "request.host",    "sparse": true ) );
+	//createIndex( $keys = array( "request.path"           => 1 }, $options = array( "name": "request.path",    "sparse": true ) );
+	//createIndex( $keys = array( "request.content_type"   => 1 }, $options = array( "name": "request.content_type", "sparse": true ) );
+	//createIndex( $keys = array( "request.content_length" => 1 }, $options = array( "name": "request.content_length", "sparse": true ) );
 
-	//createIndex( $keys = array( "response.content_type" => 1 }, $options = array( "name": "response.content_type", "sparse": true ) );
-	//createIndex( $keys = array( "response.status_code"  => 1 }, $options = array( "name": "response.status_code",  "sparse": true ) );
+	//createIndex( $keys = array( "response.content_type"   => 1 }, $options = array( "name": "response.content_type", "sparse": true ) );
+	//createIndex( $keys = array( "response.content_length" => 1 }, $options = array( "name": "response.content_length", "sparse": true ) );
+	//createIndex( $keys = array( "response.status_code"    => 1 }, $options = array( "name": "response.status_code",  "sparse": true ) );
 
 	//BASE:
 	//protected $_id;

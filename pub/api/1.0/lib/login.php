@@ -65,7 +65,7 @@ final class login extends Route {
 		if( !empty( $user->org_id ) ){
 			$query = array( '_id' => $user->org_id );
 			$org = $this->selectCollection( 'orgs' )->findOne( $query );
-			if( $org && $org->enabled )
+			if( $org && $org->is_enabled )
 				return $org;
 			else
 				throw new Exception( 'Not Authorized', 401 );
@@ -81,7 +81,7 @@ final class login extends Route {
 		);
 
 		$user = $this->selectCollection( 'users' )->findOne( $query, $options );
-		if( $user && $user->enabled ){
+		if( $user && $user->is_enabled ){
 			if( password_verify( $data['password'], $user->hash ) )
 				return new \Models\User( $user );
 			else

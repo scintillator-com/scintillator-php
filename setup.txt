@@ -1,0 +1,97 @@
+Pre-setup:  to deploy private repo, generate PAT with full `repo` permissions
+https://stackoverflow.com/questions/42148841/github-clone-with-oauth-access-token
+
+
+
+
+
+AWS EC2 Clean install:
+amazon-linux-extras install php7.4
+amazon-linux-extras install nginx1
+amazon-linux-extras install python3.8
+
+#is this needed?
+sudo ln -s /usr/bin/python3.8 /usr/bin/python3
+
+
+#create local users...
+sudo groupadd lcvalentine
+sudo useradd -g lcvalentine -m lcvalentine
+id lcvalentine
+sudo passwd lcvalentine
+
+
+sudo useradd -m -U herodev
+sudo passwd herodev
+sudo vim /etc/sudoers
+
+
+sudo usermod -a -G wheel lcvalentine
+sudo usermod -a -G wheel herodev
+
+
+mkdir sites
+
+
+cd ~/sites
+git clone https://github.com/scintillator-com/mitm-addon.git
+cd mitm-addon
+git checkout develop
+#TODO: git checkout tags/0.1.0
+mkdir logs
+
+
+#CEE: mitmproxy:  dev version is commit a42d071995e70e39010d91233d768f25b73a7f95
+cd ~/sites
+git clone https://github.com/mitmproxy/mitmproxy.git
+cd mitmproxy
+git checkout tags/v6.0.0
+
+
+ln -s ~/sites/mitm-addon ~/sites/mitmproxy/scintillator
+echo "dnspython==2.0.0" >> requirements.txt
+echo "pymongo==3.11.2" >> requirements.txt
+
+#ref: https://github.com/mitmproxy/mitmproxy/blob/master/CONTRIBUTING.md
+./dev.sh
+//installed requests-2.25.1
+. venv/bin/activate
+
+ref: https://stackoverflow.com/questions/52068746/mitmproxy-client-connection-killed-by-block-global
+mitmdump --set block_global=false -s scintillator/scintillator.py
+
+
+Whitelisted AWS public IP within Atlas
+savant
+Q5z!TB2$92MaSzgZ
+#TODO:  SSL?
+
+
+
+
+#composer...
+
+
+
+
+
+sudo amazon-linux-extras list php7.2-apc
+sudo amazon-linux-extras install php7.2-apc
+
+TODO: python 3.x
+TODO: pymongo
+
+
+
+sudo yum install php-xml.x86_64 php-pecl-uuid.x86_64 php-mbstring.x86_64
+sudo yum install php-pear.noarch
+sudo yum install php-devel.x86_64
+sudo yum install gcc
+sudo yum install openssl-devel.x86_64
+
+
+sudo pecl channel-update pecl.php.net
+sudo pecl install mongodb
+
+
+php-composer.sh require mongodb/mongodb

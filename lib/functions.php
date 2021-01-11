@@ -119,7 +119,10 @@ function dump_js(){
 		$response[ 'frames' ][] = $add;
 	}
 
-	echo json_encode( $response );
+	if( defined( 'JSON_PRETTY_PRINT' ) )
+		echo json_encode( $response, JSON_PRETTY_PRINT );
+	else
+		echo json_encode( $response );
 }
 
 function errors_as_exceptions( $errno, $errstr, $errfile, $errline, $errcontext ){

@@ -29,7 +29,7 @@ class Snippet extends MongoModel{
 	public final function validate(){
 		static $required, $optional;
 		if( empty( $required ) ){
-			$this->required = array(
+			$required = array(
 				'moment_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
 				'config'    => array( 'format' => 'object', 'object' => (object)array(
 					'required' => array(),
@@ -53,9 +53,10 @@ class Snippet extends MongoModel{
 		}
 
 		if( empty( $optional ) ){
+			$created = new \MongoDB\BSON\UTCDateTime();
 			$optional = array(
-				'created'  => array( 'format' => 'MongoDB::UTCDateTime', 'default' => new \MongoDB\BSON\UTCDateTime() ),
-				'modified' => array( 'format' => 'MongoDB::UTCDateTime', 'default' => new \MongoDB\BSON\UTCDateTime() )
+				'created'  => array( 'format' => 'MongoDB::UTCDateTime', 'default' => $created, 'scalar' ),
+				'modified' => array( 'format' => 'MongoDB::UTCDateTime', 'default' => $created, 'scalar' )
 			);
 		}
 

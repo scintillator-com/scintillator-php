@@ -27,7 +27,7 @@ final class org extends Route{
 		);
 
 		$this->optional = array(
-			'enabled' => array( 'format' => 'boolean', 'default' => true, 'scalar' )
+			'is_enabled' => array( 'format' => 'boolean', 'default' => true, 'scalar' )
 		);
 
 		$data = $this->validate();
@@ -35,7 +35,7 @@ final class org extends Route{
 		if( !$plan )
 			throw new Exception( "Plan not found: {$data['plan']}", 404 );
 
-		if( !$plan->enabled )
+		if( !$plan->is_enabled )
 			throw new Exception( "Plan disabled: {$data['plan']}", 412 );
 
 

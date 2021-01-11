@@ -17,7 +17,7 @@ class Session extends MongoModel{
 	//protected $_id;
 
 	public $created;
-	public $enabled;
+	public $is_enabled;
 	public $expires;
 	public $org_id;
 	public $token;
@@ -26,7 +26,7 @@ class Session extends MongoModel{
 	public final static function createForUser( $user ){
 		$session = new \Models\Session(array(
 			'created' => new \MongoDB\BSON\UTCDateTime(),
-			'enabled' => true,
+			'is_enabled' => true,
 			'org_id'  => $user->org_id,
 			'token'   => bin2hex( random_bytes( 24 ) ),
 			'user_id' => $user->getID()
@@ -98,7 +98,7 @@ class Session extends MongoModel{
 	public final function validate(){
 		static $required = array(
 			'created' => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
-			'enabled' => array( 'format' => 'boolean', 'scalar' ),
+			'is_enabled' => array( 'format' => 'boolean', 'scalar' ),
 			'expires' => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
 			'token'   => array( 'format' => 'hex', 'length' => array( 1, 255 ), 'scalar' ),
 			'user_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' )

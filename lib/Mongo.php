@@ -36,8 +36,9 @@ trait Mongo{
 		static $collections = array();
 		if( empty( $collections[ $this->dbName ][ $col ] ) ){
 			if( empty( $this->db ) ){
-				$config = Configuration::Load();
 				$this->getClient();
+
+				$config = Configuration::Load();
 				$this->selectDatabase( $config->mongoDB['database'] );
 			}
 			

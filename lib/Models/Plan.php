@@ -8,7 +8,7 @@ class Plan extends MongoModel{
 	//BASE:
 	//protected $_id;
 
-	public $enabled;
+	public $is_enabled;
 	public $name;
 	public $projects;
 	
@@ -19,11 +19,11 @@ class Plan extends MongoModel{
 		static $required, $optional = array();
 		if( empty( $required ) ){
 			$required = array(
-				'enabled'  => array( 'format' => 'boolean', 'scalar' ),
-				'name'     => array( 'format' => 'string',  'range' => array( 1, 32 ), 'scalar' ),
-				'projects' => array( 'format' => 'integer', 'range' => array( 0 ), 'scalar' ),
+				'is_enabled' => array( 'format' => 'boolean', 'scalar' ),
+				'name'       => array( 'format' => 'string',  'range' => array( 1, 32 ), 'scalar' ),
+				'projects'   => array( 'format' => 'integer', 'range' => array( 0 ), 'scalar' ),
 
-				'moments'         => array( 'format' => 'object', 'object' => (object)array(
+				'moments' => array( 'format' => 'object', 'object' => (object)array(
 					'optional' => array(),
 					'required' => array(
 						'history_days' => array( 'format' => 'integer', 'range' => array( 0, 90 ), 'scalar' )

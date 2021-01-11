@@ -12,9 +12,13 @@ final class history extends Route {
 	public final function GET(){
 		$this->json()->authorize();
 
-		$this->required = array();
-		
-		//TODO: mine=1
+		//TODO: list/search vs getDetail
+
+
+		$this->required = array(
+			'host' => array( 'format' => 'string', 'dataKey' => 'request.host' ),
+		);
+
 		$this->optional = array(
 			//request
 			'created-after'  => array( 'format' => 'iso8601' ),
@@ -22,8 +26,6 @@ final class history extends Route {
 
 			'id' => array( 'format' => 'string' ),
 
-			'domain' => array( 'format' => 'string', 'dataKey' => 'request.host'    ),
-			'host'   => array( 'format' => 'string', 'dataKey' => 'request.host'    ),
 			'method' => array( 'format' => 'string', 'dataKey' => 'request.method'  ),
 			'path'   => array( 'format' => 'string', 'dataKey' => 'request.path'    ),
 			'scheme' => array( 'format' => 'string', 'dataKey' => 'request.scheme'  ),
@@ -35,19 +37,35 @@ final class history extends Route {
 			'sort' => array( 'format' => 'string', 'default' => 'request.created' )
 		);
 		$data = $this->pageable( 10, 50 )->validate( $_GET );
-		
-		
-		$query = array();
-		$options = array(
+
+
+		//check this project is unlocked
+		$projectQuery = array(
+			'org_id' => $this->session->org_id,
+			'host'   => $data['host']
+		);
+		$project = $this->selectCollection( 'projects' )->findOne( $projectQuery );
+		if( !$project )
+			throw new Exception( "Project not found: {$data['host']}", 404 );
+
+		if( $project->is_locked ){
+			//402 Payment Required: please upgrade or prompt for purchase 
+			throw new Exception( "Payment Required", 402 );
+		}
+
+
+		$momentQuery = array();
+		$momentOptions = array(
 			'projection' => \Models\Moment::getSummaryProjection()
 		);
 		foreach( $data as $key => $value ){
 			if( !empty( $this->optional[ $key ][ 'dataKey' ] )){
 				$k = $this->optional[ $key ][ 'dataKey' ];
-				$query[ $k ] = $value;
+				$momentQuery[ $k ] = $value;
 			}
 			else{
 				switch( $key ){
+					/*
 					case 'created-after':
 						//$query['request.created'][ '$gte' ] = new MongoDB\BSON\UTCDateTime
 						break;
@@ -55,21 +73,26 @@ final class history extends Route {
 					case 'created-before':
 						//$query['request.created'][ '$lte' ] = new MongoDB\BSON\UTCDateTime
 						break;
+					*/
+
+					case 'host':
+						$momentQuery[ 'request.host' ] = $data['host'];
+						break;
 
 					case 'id':
-						$query[ '_id' ] = new MongoDB\BSON\ObjectId( $value );
+						$momentQuery[ '_id' ] = new MongoDB\BSON\ObjectId( $value );
 						break;
 
 					case 'page':
-						$options[ 'skip' ]  = ( $data['page'] - 1 ) * $data['pageSize'];
+						$momentOptions[ 'skip' ]  = ( $data['page'] - 1 ) * $data['pageSize'];
 						break;
 
 					case 'pageSize':
-						$options[ 'limit' ] = $value;
+						$momentOptions[ 'limit' ] = $value;
 						break;
 
 					case 'sort':
-						$options[ 'sort' ] = array( $value => -1 );
+						$momentOptions[ 'sort' ] = array( $value => -1 );
 						break;
 
 					default:
@@ -79,11 +102,10 @@ final class history extends Route {
 			}
 		}
 
-		//TODO: apply org_id
-
+		$momentQuery['org_id'] = $this->session->org_id;
 
 		$responses = array();
-		$res = $this->selectCollection( 'moments' )->find( $query, $options );
+		$res = $this->selectCollection( 'moments' )->find( $momentQuery, $momentOptions );
 		foreach( $res as $moment ){
 			$responses[] = \Models\Moment::formatSummary( $moment );
 		}

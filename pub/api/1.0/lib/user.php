@@ -37,7 +37,7 @@ final class user extends Route{
 		$user->algorithm  = 'argon2id';
 		$user->client_key = base64_encode( random_bytes( 24 ) ); //32 base64 chars
 		$user->created    = $user->modified = new \MongoDB\BSON\UTCDateTime();
-		$user->enabled    = true;
+		$user->is_enabled = true;
 		$user->hash       = password_hash( $data['password'], PASSWORD_ARGON2ID );
 		$user->last_login = null;
 		$user->username   = $data['email'];
