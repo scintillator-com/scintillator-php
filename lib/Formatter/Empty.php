@@ -9,7 +9,19 @@ class Formatter_Empty extends Formatter{
 	}
 
 	public final function format( &$content, $isCached=true ){
-		return null;
+		return '';
+	}
+
+	public final function getChunksFooter(){
+		return '';
+	}
+
+	public final function getChunksHeader(){
+		return '';
+	}
+
+	public final function getChunksSeparator(){
+		return '';
 	}
 
 	public final function getHeaders( &$content, $isCached=true ){

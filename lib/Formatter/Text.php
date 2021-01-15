@@ -8,11 +8,11 @@ final class Formatter_Text extends Formatter{
 		foreach( $contentHeaders as $k => $v ){
 			header( is_numeric( $k ) ? $v : "{$k}: {$v}" );
 		}
-		echo $this->_cache;
+		print( $this->_cache );
 	}
 
 	public final function format( &$content, $isCached=true ){
-		if( $isCached && isset( $this->_cache ) )
+		if( $isCached && $this->_cache === $content )
 			return $this->_cache;
 
 
@@ -26,6 +26,19 @@ final class Formatter_Text extends Formatter{
 
 		return $formatted;
 	}
+
+	public final function getChunksFooter(){
+		return '';
+	}
+
+	public final function getChunksHeader(){
+		return '';
+	}
+
+	public final function getChunksSeparator(){
+		return '';
+	}
+
 
 	public final function getHeaders( &$content, $isCached=true ){
 		$formatted = $this->format( $content, $isCached );

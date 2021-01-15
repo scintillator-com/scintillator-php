@@ -4,8 +4,13 @@ final class Response{
 	public $cors = array();
 	public $headers = array();
 
-	private $_contentType;
-	
+	private $_chunks = 0;
+	private $_contents = array();
+	private $_contentType = null;
+	private $_isChunked = null;
+
+	private $eol = "\r\n";
+
 	public final function __construct( $contentType='*/*' ){
 		$this->setContentType( $contentType );
 	}
@@ -43,6 +48,15 @@ final class Response{
 		}
 
 		exit;
+	}
+
+	public final function end(){
+		if( $this->_isChunked ){
+			$this->_emitChunk( $this->formatter->getChunksFooter() );
+			$this->_emitChunk( '' );
+		}
+
+		$this->flush();
 	}
 
 	public final function emit( $content, $code=200 ){
@@ -88,6 +102,15 @@ final class Response{
 		echo '500: Internal Server Error';
 	}
 
+	public final function flush(){
+		ob_end_flush();
+	}
+
+	public final function json(){
+		$this->_setFormatter( 'json' );
+		return $this;
+	}
+
 	public final function loadContentType(){
 		if( function_exists( 'getallheaders' ) ){
 			foreach( getallheaders() as $k => &$v ){
@@ -107,13 +130,84 @@ final class Response{
 		return $this;
 	}
 
+	public final function print( $content, $replace=true, $code=null ){
+		if( headers_sent() ){
+			if( $this->_isChunked ){
+				
+			}
+			else{
+				\Log::error( "Output already started" );
+			}
+		}
+
+		if( !$code ){
+			$code = http_response_code();
+		}
+
+		if( $replace || $this->_chunks === 0 ){
+			if( $this->_isChunked )
+				header_remove( 'Transfer-Encoding' );
+			
+			$this->_chunks = 1;
+			$this->_contents = array( $content );
+			$this->_isChunked = false;
+			$contentHeaders = $this->formatter->clearCache()->getHeaders( $content );
+
+			ob_end_clean();
+			ob_start();
+
+			$this->_emitHeaders( $contentHeaders, $code );
+			$this->_emitContent( $content );
+		}
+		else if( $this->_chunks === 1 ){
+			$this->_chunks++;
+			$this->_contents[] = $content;
+			$this->_isChunked = true;
+			$contentHeaders = $this->formatter->getHeaders( $content, false );
+
+			//remove header after queue
+			$this->_emitHeaders( $contentHeaders, $code );
+			header_remove( 'Content-Length' );
+			header( 'Transfer-Encoding: chunked' );
+
+			$prevChunk = ob_get_clean();
+			ob_start();
+
+			$this->_emitChunk(
+				$this->formatter->getChunksHeader()
+				.$prevChunk
+			);
+
+			$this->_emitChunk(
+				$this->formatter->getChunksSeparator()
+				. $this->formatter->format( $content, false )
+			);
+		}
+		else{
+			$this->_emitChunk( 
+				$this->formatter->getChunksSeparator()
+				. $this->formatter->format( $content, false )
+			);
+		}
+	}
+
 	public final function setContentType( $contentType ){
-		$this->_setFormatter( strtolower( trim( $contentType ) ) );
+		$this->_setFormatter( $contentType );
 		return $this;
 	}
 
-	private final function _emitContent(){
-		echo $this->formatter->format( $this->content );
+	public final function text(){
+		$this->_setFormatter( 'text' );
+		return $this;
+	}
+
+	private final function _emitChunk( $chunk ){
+		$hexLength = dechex( strlen( $chunk ) );
+		print( "{$hexLength}{$this->eol}{$chunk}{$this->eol}" );
+	}
+
+	private final function _emitContent( $content ){
+		print( $this->formatter->format( $content ) );
 	}
 
 	private final function _emitHeaders( $contentHeaders, $code ){
@@ -145,6 +239,7 @@ final class Response{
 	}
 
 	private final function _setFormatter( $contentType ){
+		$contentType = strtolower( trim( $contentType ) );
 		$types = parse_tuple_header( $contentType );
 		foreach( $types as $type => $attributes ){
 			switch( $type ){

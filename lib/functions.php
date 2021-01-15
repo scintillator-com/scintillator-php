@@ -28,10 +28,7 @@ function apache_request_headers(){
 }
 
 function dump(){
-	if( CLI ){
-		ob_start();
-	}
-
+	ob_start();
 	echo '<pre style="text-align: left;">'. PHP_EOL;
 
 	$frames = debug_backtrace();
@@ -58,29 +55,30 @@ function dump(){
 	echo $file[ 'file' ] .':'. $file[ 'line' ] . PHP_EOL;
 
 
+	echo PHP_EOL;
 	echo '<pre style="margin-left: 4em;">'. PHP_EOL;
-	echo '<strong>Previous Frame:</strong>'. PHP_EOL;
+	echo "\t<strong>Previous Frame:</strong>". PHP_EOL;
 
 	if( !empty( $prev[ 'class' ] ) ){
-		echo $prev[ 'class' ] . $prev[ 'type' ] . $prev[ 'function' ] ."()". PHP_EOL;
+		echo "\t". $prev[ 'class' ] . $prev[ 'type' ] . $prev[ 'function' ] ."()". PHP_EOL;
 	}else if( !empty( $prev ) ){
-		echo $prev[ 'function' ] . PHP_EOL;
+		echo "\t". $prev[ 'function' ] . PHP_EOL;
 	}else{
-		echo "(no function)". PHP_EOL;
+		echo "\t(no function)". PHP_EOL;
 	}
 
 	if( !empty( $class[ 'file' ] ) ){
-		echo $class[ 'file' ];
-
+		echo "\t". $class[ 'file' ];
 		if( !empty( $class[ 'line' ] ) ){
 			echo ':'. $class[ 'line' ];
 		}
-		
 		echo PHP_EOL;
 	}
 
 	echo '</pre>'. PHP_EOL;
-
+	echo PHP_EOL;
+	echo '----------------------------------------'. PHP_EOL;
+	echo '<hr />'. PHP_EOL;
 
 	$args = func_get_args();
 	foreach( $args as $arg ){
@@ -90,9 +88,13 @@ function dump(){
 	}
 
 	echo '</pre>'. PHP_EOL;
-	
-	if( CLI ){
-		echo strip_tags( ob_get_clean() );
+
+	$output = ob_get_clean();
+	if( true || CLI ){
+		return strip_tags( $output );
+	}
+	else{
+		return $output;
 	}
 }
 

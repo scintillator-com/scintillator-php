@@ -25,11 +25,11 @@ final class login extends Route {
 		self::updatedOne( $userResult );
 
 		if( $this->reuseSession( $user, $session ) ){
-			$this->response->emit( \Models\Session::view( $session ) );
+			$this->response->print( \Models\Session::view( $session ) );
 		}
 		else{
 			$this->createSession( $user, $session );
-			$this->response->emit( \Models\Session::view( $session ) );
+			$this->response->print( \Models\Session::view( $session ) );
 		}
 	}
 
