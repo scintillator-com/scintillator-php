@@ -2,19 +2,27 @@
 
 //TODO: capture EOL?
 class HTTP_Request extends HTTP_Data{
-	//shared with HTTP_Data
-	protected $path   = null;
-	protected $_query  = '';
-	protected $scheme = null;
+	//inherited:
+	//protected $_body = '';
+	//protected $_bodyBoundary = null;
+	//protected $_bodyPos = -1;
+	//protected $content_length = -1;
+	//protected $headers = array();
+	//protected $_headerIndex = array();
+
 
 	private $_authUser = null;
 	private $_authPass = null;
 	private $http_version = null;
+	private $method   = null;
+	private $path   = null;
 	private $port   = null;
-	private $verb   = null;
+	private $query_data  = array();
+	private $query_string = '';
+	private $scheme = null;
 
 	public function getBody(){
-		return $this->_body;
+		return $this->body;
 	}
 
 	public function getHost(){
@@ -26,8 +34,35 @@ class HTTP_Request extends HTTP_Data{
 		}
 	}
 
+	public function getUrl( $forceHttps = false ){
+		$scheme = $forceHttps ? 'https' : $this->scheme;
+
+		$userPass = '';
+		$up = $this->getUserPass();
+		$auth = $this->getHeader( 'AUTHORIZATION' );
+		if( !$auth && $up )
+			$userPass = "{$up}@";
+
+		$host = $this->getHeader( 'HOST' );
+
+		$qs = '';
+		if( $this->query_string )
+			$qs = "?{$this->query_string}";
+
+		$url = "{$scheme}://{$userPass}{$host['v']}{$this->path}{$qs}";
+		return $url;
+	}
+
+	public function getPath(){
+		return $this->path;
+	}
+
+	public function getQueryString(){
+		return $this->query_string;
+	}
+
 	public function getVerb(){
-		return $this->verb;
+		return $this->method;
 	}
 
 	public function isHostSelf(){
@@ -50,7 +85,7 @@ Log::warn(array( $host, $_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME'] ));
 		$request->http_version = $_SERVER[ 'SERVER_PROTOCOL' ];
 		$request->port = (int)$_SERVER['SERVER_PORT'];
 		$request->scheme = $_SERVER[ 'REQUEST_SCHEME' ];
-		$request->verb = $_SERVER[ 'REQUEST_METHOD' ];
+		$request->method = $_SERVER[ 'REQUEST_METHOD' ];
 
 		if( isset( $_SERVER[ 'PHP_AUTH_USER' ] ) )
 			$request->_authUser = $_SERVER[ 'PHP_AUTH_USER' ];
@@ -65,7 +100,7 @@ Log::warn(array( $host, $_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME'] ));
 			$request->path = $path;
 		}
 		else{
-			$request->_query = substr( $path, $queryAt );
+			$request->query_string = substr( $path, $queryAt + 1 );
 			$request->path = substr( $path, 0, $queryAt );
 		}
 
@@ -90,26 +125,24 @@ Log::warn(array( $host, $_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME'] ));
 	}
 
 	public function serialize(){
-		$content_type = $this->getContentType();
-
 		$data = array(
 			'created' => new MongoDB\BSON\UTCDateTime(),
 			'http_version' => $this->http_version,
-			'verb'    => $this->verb,
+			'method'  => $this->method,
 			'scheme'  => $this->scheme,
 			'host'    => $this->getHost(),
 			'port'    => $this->port,
 			'path'    => $this->path,
-			'queryString' => !empty( $this->_query ) ? $this->_query : null,
 			'content_length' => 0,
-			'content_type' => $content_type,
-			'headers' => array(),
-			'query'   => array(),
-			'body'    => null,
+			'content_type' => $this->getContentType(),
+			'headers'      => array(),
+			'query_data'   => $this->query_data,
+			'query_string' => $this->query_string,
+			'body' => null,
 		);
 
-		if( !empty( $this->_headers ) ){
-			foreach( $this->_headers as &$header ){
+		if( !empty( $this->headers ) ){
+			foreach( $this->headers as &$header ){
 				$data['headers'][] = array(
 					'k' => $header[ 'k' ],
 					'v' => $header[ 'v' ],
@@ -118,19 +151,15 @@ Log::warn(array( $host, $_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME'] ));
 			}
 		}
 
-		if( !empty( $this->_query ) ){
-			if( $this->_query[0] === '?' )
-				$data['query'] = $this->_parseQuery( substr( $this->_query, 1 ) );
-			else
-				$data['query'] = $this->_parseQuery( $this->_query );
+		if( !empty( $this->query_string ) ){
+			if( $this->query_string[0] === '?' )
+				throw new Exception( "Why is there a ? here?" );
+
+			$data['query_data'] = $this->_parseQuery( $this->query_string );
 		}
 
-		if( $this->_body ){
-			$data['body'] = $this->_body->serialize( $content_type );
-		}
-
-		if( $content_type = $this->getContentType() ){
-			$data['content_type'] = $content_type;
+		if( $this->body ){
+			$data['body'] = $this->body->serialize( $content_type );
 		}
 
 		return $data;
@@ -155,7 +184,7 @@ Log::warn(array( $host, $_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME'] ));
 		$query = $this->_query; //str_replace( '&', '&amp; ', $this->_query );
 
 		ob_start();
-		echo "{$this->verb} {$this->path}{$query} {$this->http_version}". PHP_EOL;
+		echo "{$this->method} {$this->path}{$query} {$this->http_version}". PHP_EOL;
 		if( !$this->getHeader( 'AUTHORIZATION' ) ){
 			if( isset( $this->_authUser ) ){
 				$host = $this->getHeader( 'HOST' );
@@ -172,12 +201,12 @@ Log::warn(array( $host, $_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME'] ));
 		}
 
 		//HeaderCollection?
-		foreach( $this->_headers as &$h ){
+		foreach( $this->headers as &$h ){
 			echo "{$h['k']}: {$h['v']}". PHP_EOL;
 		}
 
-		if( $this->_body )
-			echo PHP_EOL . "{$this->_body}";
+		if( $this->body )
+			echo PHP_EOL . "{$this->body}";
 		else
 			echo PHP_EOL . PHP_EOL;
 

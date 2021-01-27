@@ -6,13 +6,14 @@ abstract class HTTP_Data{
 	const MULTIPART_FORMDATA = 'multipart/form-data';
 	const TEXT_PLAIN = 'text/plain';
 
-	protected $_body = '';
+	protected $body = '';
 	protected $_bodyBoundary = null;
 	protected $_bodyPos = -1;
-	protected $content_length = -1;
-	protected $_headers = array();
+
+	protected $headers = array();
 	protected $_headerIndex = array();
 
+	protected $content_length = 0;
 	private $content_type = null;
 
 
@@ -20,32 +21,10 @@ abstract class HTTP_Data{
 
 
 	public function getBody(){
-		return $this->_body;
+		return $this->body;
 	}
 
 	public function getContentType(){
-		if( !$this->content_type ){
-			$header = $this->getHeader( 'CONTENT-TYPE' );
-			if( !empty( $header['v'] ) ){
-				if( strcasecmp( self::APPLICATION_JSON, $header['v'] ) === 0 ){
-					$this->content_type = self::APPLICATION_JSON;
-				}
-				else if( strcasecmp( self::FORM_URL_ENCODED, $header['v'] ) === 0 ){
-					$this->content_type = self::FORM_URL_ENCODED;
-				}
-				else if( strncasecmp( self::MULTIPART_FORMDATA, $header['v'], 19 ) === 0 ){ //|| stripos( $header['v'], 'boundary' ) ){
-					$this->content_type = self::MULTIPART_FORMDATA;
-				}
-				else if( strcasecmp( self::TEXT_PLAIN, $header['v'] ) === 0 ){
-					$this->content_type = self::TEXT_PLAIN;
-				}
-				else{
-					Log::warning( "Content-Type: {$header['v']}" );
-					$this->content_type = $header['v'];
-				}
-			}
-		}
-		
 		return $this->content_type;
 	}
 
@@ -53,7 +32,7 @@ abstract class HTTP_Data{
 		$key = strtoupper( $key );
 		if( array_key_exists( $key, $this->_headerIndex ) ){
 			$idx = $this->_headerIndex[ $key ];
-			return $this->_headers[ $idx ];
+			return $this->headers[ $idx ];
 		}
 		else{
 			return null;
@@ -62,28 +41,45 @@ abstract class HTTP_Data{
 
 	public function getHeaders(){
 		$clone = array();
-		foreach( $this->_headers as $key => &$item ){
-			$clone[] = array( 'k' => $item['k'], 'v' => $item['v'], 'i' => $item['i'] );
+		foreach( $this->headers as $key => &$item ){
+			$clone[] = array(
+				'k' => $item['k'],
+				'v' => $item['v'],
+				'i' => $item['i']
+			);
 		}
 		return $clone;
 	}
 
-	public function getUrl( $forceHttps = false ){
-		$scheme = $forceHttps ? 'https' : $this->_scheme;
-		$host = $this->getHeader( 'HOST' );
-
-		$auth = $this->getHeader( 'AUTHORIZATION' );
-		$up = $this->getUserPass();
-		if( !$auth && $up )
-			$url = "{$scheme}://{$up}@{$host['v']}{$this->_path}{$this->_query}";
-		else
-			$url = "{$scheme}://{$host['v']}{$this->_path}{$this->_query}";
-
-		return $url;
-	}
-
 	public function hasBody(){
 		return $this->content_length > 0;
+	}
+
+	//TODO: we should line this up with the python addon
+	public function measureBody(){
+		$reader = fopen( 'php://input', 'r' );
+		while( !feof( $reader ) ){
+			fgets( $reader );
+		}
+		$body_length = ftell( $reader );
+		fclose( $reader );
+
+		if( $body_length != $this->content_length ){
+			\Log::warning( "Body length {$body_length} doesn't match content length {$this->content_length}" );
+			$this->content_length = $body_length;
+		}
+
+		return $body_length;
+	}
+
+	//CEE: necessarily, this happens after loadHeaders, so for now we measure that
+	//TODO: we should line this up with the python addon
+	public function measureHeaders(){
+		$length = 0;
+		foreach( $this->headers as &$h ){
+			$length += strlen( $h['k'] ) + 1 + strlen( $h['v'] );
+		}
+		return $length;
 	}
 
 	public static function readHeaderStream( &$stream ){
@@ -109,7 +105,6 @@ abstract class HTTP_Data{
 
 		return $headers;
 	}
-
 
 	protected function getUserPass(){
 		if( isset( $this->_authUser ) ){
@@ -178,14 +173,14 @@ abstract class HTTP_Data{
 
 
 		if( $attachments ){
-			$this->_body = new HTTP_MultipartBody( $attachments, $boundary );
+			$this->body = new HTTP_MultipartBody( $attachments, $boundary );
 		}
 		else if( $stringBody ){
-			$this->_body = new HTTP_StringBody( $stringBody );
+			$this->body = new HTTP_StringBody( $stringBody );
 		}
 		else if( $_POST || $_FILES ){
 			$this->content_type = self::MULTIPART_FORMDATA;
-			$this->_body = HTTP_MultipartBody::loadPhp( $boundary );
+			$this->body = HTTP_MultipartBody::loadPhp( $boundary );
 		}
 
 		if( empty( $this->content_type ) && $stringBody ){
@@ -216,11 +211,11 @@ abstract class HTTP_Data{
 				Log::warning( "Overwriting header: '{$key}'". PHP_EOL );
 
 
-			$this->_headerIndex[ $KEY ] = count( $this->_headers );
+			$this->_headerIndex[ $KEY ] = count( $this->headers );
 			$header = array(
 				'k'  => $key,
 				'v'  => $value,
-				'i'  => count( $this->_headers ),
+				'i'  => count( $this->headers ),
 				//'parsed' => array()
 			);
 
@@ -237,7 +232,30 @@ abstract class HTTP_Data{
 				}
 			}
 
-			$this->_headers[] = $header;
+			$this->headers[] = $header;
+
+			if( $KEY === 'CONTENT-LENGTH' ){
+				$this->content_length = (int)$value;
+			}
+			else if( $KEY === 'CONTENT-TYPE' ){
+				if( strcasecmp( self::APPLICATION_JSON, $value ) === 0 ){
+					$this->content_type = self::APPLICATION_JSON;
+				}
+				else if( strcasecmp( self::FORM_URL_ENCODED, $value ) === 0 ){
+					$this->content_type = self::FORM_URL_ENCODED;
+				}
+				else if( strncasecmp( self::MULTIPART_FORMDATA, $value, 19 ) === 0 ){ //|| stripos( $header['v'], 'boundary' ) ){
+					$this->content_type = self::MULTIPART_FORMDATA;
+				}
+				else if( strcasecmp( self::TEXT_PLAIN, $value ) === 0 ){
+					$this->content_type = self::TEXT_PLAIN;
+				}
+				else{
+					//check for ';'
+					Log::warning( "Content-Type: {$header['v']}" );
+					$this->content_type = $header['v'];
+				}
+			}
 		}
 	}
 
@@ -245,12 +263,12 @@ abstract class HTTP_Data{
 		$k = strtoupper( $key );
 		if( array_key_exists( $k, $this->_headerIndex ) ){
 			$idx = $this->_headerIndex[ $k ];
-			$this->_headers[ $idx ][ 'v' ] = $value;
+			$this->headers[ $idx ][ 'v' ] = $value;
 		}
 		else{
-			$idx = count( $this->_headers );
+			$idx = count( $this->headers );
 			$this->_headerIndex[ $k ] = $idx;
-			$this->_headers[ $idx ] = array(
+			$this->headers[ $idx ] = array(
 				'k' => $key,
 				'v' => $value,
 				'i' => $idx

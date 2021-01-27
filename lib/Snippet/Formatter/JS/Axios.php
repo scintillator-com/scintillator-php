@@ -4,11 +4,19 @@
 //TODO: spacing:    $op = '(', $cp = ')', $ob = '{', $cb = '}'
 //TODO: quotes:     $q = "'" || $q = '"'
 final class Snippet_Formatter_JS_Axios extends Snippet_Formatter{
+	//TODO: formatAsync
+	//TODO: formatPromise
+	//TODO: format
 	public function format( &$moment ){
 		try{
+			$bodyArgs = $this->getBodyArgs( $moment );
+			$headers = $this->getHeaders( $moment );
+			$queryArgs = $this->getQueryArgs( $moment );
+
 			$writer = new MemoryWriter();
 			if( $this->snippet->config->method === 'async' ){
-				$writer->writeLine( 'async function(){' )->indent();
+				$writer->writeLine( 'async function(){' )
+					->indent();
 			}
 
 			$writer->writeLine( "const config = {}" );
@@ -33,7 +41,7 @@ final class Snippet_Formatter_JS_Axios extends Snippet_Formatter{
 			
 
 			$body = null;
-			if( !empty( (array)$this->snippet->config->body_params ) )
+			if( !empty( $this->snippet->config->body_params ) )
 				throw new Exception( 'Not implemented: body_params' );
 
 
@@ -59,11 +67,11 @@ final class Snippet_Formatter_JS_Axios extends Snippet_Formatter{
 
 				//https://github.com/axios/axios#request-method-aliases
 				$method = strtolower( $moment->request->method );
-				switch( $method ){
-					case 'get':
-					case 'delete':
-					case 'head':
-					case 'options':
+				switch( $moment->request->method ){
+					case 'GET':
+					case 'DELETE':
+					case 'HEAD':
+					case 'OPTIONS':
 						$writer->writeLine( "const response = await axios.{$method}( '{$url}', config );" );
 						break;
 

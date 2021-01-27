@@ -8,10 +8,10 @@ class HTTP_Relay_Curl extends HTTP_Relay{
 	private function applyHeaders( HTTP_Request $request ){
 		$headers = array();
 		foreach( $request->getHeaders() as &$header ){
-			if( strcasecmp( 'USER-AGENT', $header['key'] ) === 0 )
-				$this->_options[ CURLOPT_USERAGENT ] = $header['value'];
+			if( strcasecmp( 'USER-AGENT', $header['k'] ) === 0 )
+				$this->_options[ CURLOPT_USERAGENT ] = $header['v'];
 			else
-				$headers[] = "{$header['key']}: {$header['value']}";
+				$headers[] = "{$header['k']}: {$header['v']}";
 		}
 
 		if( $headers ){
@@ -23,7 +23,7 @@ class HTTP_Relay_Curl extends HTTP_Relay{
 		//TODO: cookies
 		$forceHttps = false;
 		$upgrade = $request->getHeader( 'UPGRADE-INSECURE-REQUESTS' );
-		if( $upgrade && (int)$upgrade['value'] )
+		if( $upgrade && (int)$upgrade['v'] )
 			$forceHttps = true;
 
 		//reset + url

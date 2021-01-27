@@ -22,7 +22,7 @@ final class Snippet_Formatter_JS_JQuery extends Snippet_Formatter{
 			}
 
 			$body = null;
-			if( !empty( (array)$this->snippet->config->body_params ) )
+			if( !empty( $this->snippet->config->body_params ) )
 				throw new Exception( 'Not implemented: body_params' );
 
 

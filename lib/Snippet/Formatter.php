@@ -24,15 +24,34 @@ abstract class Snippet_Formatter{
 
 	abstract public function format( &$moment );
 
+	protected function getBodyArgs( &$moment ){
+		$bodyArgs = array();
+		if( !empty( $this->snippet->config->body_params ) ){
+			$findParams = array_map( 'strtolower', (array)$this->snippet->config->body_params );
+			
+			//TODO: sort by index?
+			foreach( $moment->request->body as &$kvp ){
+				$k = array_search( strtolower( $kvp->k ), $findParams, true );
+				if( $k !== false ){
+					unset( $findParams[$k] );
+					$bodyArgs[] = $kvp;
+				}
+			}
+		}
+		return $bodyArgs;
+	}
+
 	protected function getHeaders( &$moment ){
 		$headers = array();
 		if( !empty( $this->snippet->config->header_params ) ){
 			$findHeaders = array_map( 'strtolower', (array)$this->snippet->config->header_params );
-			foreach( $moment->request->headers as &$header ){
-				$k = array_search( strtolower( $header->k ), $findHeaders, true );
+			
+			//TODO: sort by index?
+			foreach( $moment->request->headers as &$kvp ){
+				$k = array_search( strtolower( $kvp->k ), $findHeaders, true );
 				if( $k !== false ){
 					unset( $findHeaders[$k] );
-					$headers[] = $header;
+					$headers[] = $kvp;
 				}
 			}
 		}
@@ -40,7 +59,24 @@ abstract class Snippet_Formatter{
 		return $headers;
 	}
 
-	protected function getURL( &$moment, $appendQuery=false ){
+	protected function getQueryArgs( &$moment ){
+		$queryArgs = array();
+		if( !empty( $this->snippet->config->query_params ) ){
+			$findParams = array_map( 'strtolower', (array)$this->snippet->config->query_params );
+			
+			//TODO: sort by index?
+			foreach( $moment->request->query_data as &$kvp ){
+				$k = array_search( strtolower( $kvp->k ), $findParams, true );
+				if( $k !== false ){
+					unset( $findParams[$k] );
+					$queryArgs[] = $kvp;
+				}
+			}
+		}
+		return $queryArgs;
+	}
+
+	protected function getURL( &$moment ){
 		$url = "{$moment->request->scheme}://{$moment->request->host}";
 		if( $moment->request->scheme === 'http' && $moment->request->port !== 80 ){
 			$url .= ":{$moment->request->port}";
@@ -51,19 +87,9 @@ abstract class Snippet_Formatter{
 
 		$url .= "{$moment->request->path}";
 
-		if( $appendQuery && !empty( $this->snippet->config->query_params ) ){
-			$params = array();
-			$findParams = array_map( 'strtolower', (array)$this->snippet->config->query_params );
-			foreach( $moment->request->query_data as &$kvp ){
-				$k = array_search( strtolower( $kvp->k ), $findParams, true );
-				if( $k !== false ){
-					unset( $findParams[$k] );
-					$params[ $kvp->k ] = $kvp->v;
-				}
-			}
-
-			$url .= '?'. http_build_query( $params );
-		}
+		//if( $appendQuery && $queryArgs = $this->getQueryArgs( $moment ) ){
+		//	$url .= '?'. http_build_query( $queryArgs );
+		//}
 
 		return $url;
 	}

@@ -29,7 +29,7 @@ class HTTP_Response extends HTTP_Data{
 		//TODO: before we read the body, what is the content type?
 		//$response->_bodyPos = ftell( $stream );
 		//if( $stats['size'] < 1000000 ){
-		//	$response->_body = fread( $stream, $stats['size'] - $response->_bodyPos );
+		//	$response->body = fread( $stream, $stats['size'] - $response->_bodyPos );
 		//}
 
 		fseek( $stream, $initPos );
@@ -59,18 +59,18 @@ class HTTP_Response extends HTTP_Data{
 			'body'    => null,
 		);
 
-		if( !empty( $this->_headers ) ){
-			foreach( $this->_headers as &$header ){
+		if( !empty( $this->headers ) ){
+			foreach( $this->headers as &$header ){
 				$data['headers'][] = array(
-					'key'   => $header[ 'key' ],
-					'value' => $header[ 'value' ],
-					'index' => $header[ 'index' ]
+					'k' => $header[ 'k' ],
+					'v' => $header[ 'v' ],
+					'i' => $header[ 'i' ]
 				);
 			}
 		}
 
-		if( $this->_body ){
-			$data['body'] = $this->_body->serialize( $content_type );
+		if( $this->body ){
+			$data['body'] = $this->body->serialize( $content_type );
 		}
 
 		if( $content_type = $this->getContentType() ){
@@ -82,5 +82,13 @@ class HTTP_Response extends HTTP_Data{
 
 	public function __toString(){
 		throw new Exception( 'Not implemented' );
+	}
+
+	protected function getPath(){
+		throw new Exception( 'Unsupported: HTTP_Response.getPath()' );
+	}
+
+	protected function getQueryString(){
+		throw new Exception( 'Unsupported: HTTP_Response.getQueryString()' );
 	}
 }

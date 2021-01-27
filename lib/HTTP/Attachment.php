@@ -1,12 +1,21 @@
 <?php
 
 class HTTP_Attachment extends HTTP_Data{
+	//inherited:
+	//protected $body = '';
+	//protected $_bodyBoundary = null;
+	//protected $_bodyPos = -1;
+	//protected $content_length = -1;
+	//protected $headers = array();
+	//protected $_headerIndex = array();
+	//protected $query_string = '';
+
 	public $index = -1;
 	private $_file = null;
 	private $_name = null;
 
 	public function getBody(){
-		return $this->_body;
+		return $this->body;
 	}
 
 	public function getContentType(){
@@ -32,7 +41,7 @@ class HTTP_Attachment extends HTTP_Data{
 		$attachment->_file = $file;
 
 		$attachment->_headerIndex['CONTENT-DISPOSITION'] = 0;
-		$attachment->_headers[] = array(
+		$attachment->headers[] = array(
             'key'   => 'Content-Disposition',
             'value' => "form-data; name=\"{$key}\"; filename=\"{$file['name']}\"",
 			'index' => 0,
@@ -44,7 +53,7 @@ class HTTP_Attachment extends HTTP_Data{
 		);
 
 		$attachment->_headerIndex['CONTENT-TYPE'] = 1;
-		$attachment->_headers[] = array(
+		$attachment->headers[] = array(
             'key'   => 'Content-Type',
             'value' => $file['type'],
 			'index' => 1
@@ -56,10 +65,10 @@ class HTTP_Attachment extends HTTP_Data{
 	public static function loadKeyValue( &$key, &$value ){
 		$attachment = new HTTP_Attachment();
 		$attachment->_name = $key;
-		$attachment->_body = $value;
+		$attachment->body = $value;
 		$attachment->content_length = strlen( $value );
 		$attachment->_headerIndex['CONTENT-DISPOSITION'] = 0;
-		$attachment->_headers[] = array(
+		$attachment->headers[] = array(
             'key'   => 'Content-Disposition',
             'value' => "form-data; name=\"{$key}\"",
 			'index' => 0,
@@ -83,7 +92,7 @@ class HTTP_Attachment extends HTTP_Data{
 		$attachment->_bodyBoundary = $boundary;
 		$attachment->loadHeaders( $headers );
 
-		$attachment->_body = '';
+		$attachment->body = '';
 		$attachment->_bodyPos = $initPos = ftell( $stream );
 		while( !feof( $stream ) ){
 			$line = fgets( $stream );
@@ -93,16 +102,16 @@ class HTTP_Attachment extends HTTP_Data{
 				break;
 			}
 			else{
-				$attachment->_body .= $line;
+				$attachment->body .= $line;
 				$initPos = ftell( $stream );
 			}
 		}
 
-		if( substr_compare( $attachment->_body, "\r\n", -2 ) === 0 ){
-			$attachment->_body = substr( $attachment->_body, 0, -2 );
+		if( substr_compare( $attachment->body, "\r\n", -2 ) === 0 ){
+			$attachment->body = substr( $attachment->body, 0, -2 );
 		}
-		else if( substr_compare( $attachment->_body, "\n", -1 ) ){
-			$attachment->_body = substr( $attachment->_body, 0, -1 );
+		else if( substr_compare( $attachment->body, "\n", -1 ) ){
+			$attachment->body = substr( $attachment->body, 0, -1 );
 		}
 		else{
 			Log::warning( 'EOL not trimmed' );
@@ -118,7 +127,7 @@ class HTTP_Attachment extends HTTP_Data{
 				$attachment->_file = array(
 					'name'     => $header['parsed']['filename'],
 					'size'     => $attachment->content_length,
-					'tmp_name' => null,   //implies $this->_body
+					'tmp_name' => null,   //implies $this->body
 					'type'     => null
 				);
 
@@ -134,13 +143,13 @@ class HTTP_Attachment extends HTTP_Data{
 	public function serialize(){
 		$data = array(
 			'key'   => $this->_name,
-			'value' => $this->_body,
+			'value' => $this->body,
 			'index' => $this->index,
 			'headers' => array()
 		);
 
-		if( !empty( $this->_headers ) ){
-			foreach( $this->_headers as &$header ){
+		if( !empty( $this->headers ) ){
+			foreach( $this->headers as &$header ){
 				$data['headers'][] = array(
 					'key'   => $header['key'],
 					'value' => $header['value'],
@@ -154,11 +163,11 @@ class HTTP_Attachment extends HTTP_Data{
 
 	public function __toString(){
 		ob_start();
-		foreach( $this->_headers as &$h ){
+		foreach( $this->headers as &$h ){
 			echo "{$h['key']}: {$h['value']}". PHP_EOL;
 		}
 
-		echo PHP_EOL ."{$this->_body}". PHP_EOL;
+		echo PHP_EOL ."{$this->body}". PHP_EOL;
 		return ob_get_clean();
 	}
 }
