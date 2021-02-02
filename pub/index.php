@@ -17,38 +17,37 @@ try{
 	$db = $client->selectDatabase( 'scintillator' );
 	
 	
-	//TODO: check auth
+	//TODO: check auth, cancel?
 	
 	
 	$col = $db->selectCollection( 'moments' );
+
+	//TODO: moment
+	//TODO: ignore_request
+
 	
 	$req = HTTP_Request::load()
 		->setScheme( 'https' )
 		->setHost( 'api.twilio.com' )
 		->setPort( 443 );
 
-print( dump( $req->serialize() ) );
-exit;
+	$queryLength = strlen( $req->getQueryString() );
+	$headersLength = $req->measureHeaders();
+	$bodyLength = $req->measureBody();
 
-	if( $req->content_length > 1000000 )
-		throw new Exception( "HTTP body is too large: {$this->content_length} bytes" );
+	//TODO: ignore?
+	//if( $req->content_length > 1000000 )
+	//	throw new Exception( "HTTP body is too large: {$this->content_length} bytes" );
+
+
+	//TODO: moment->generator
+	//TODO: moment->org_id
+	//TODO: moment->user_id
+	//TODO: moment->visibility
+	//TODO: moment->timing
 
 	$req->loadBody();
 
-	//if( $req->isHostSelf() )
-	//	throw new Exception( 'Refusing to proxy request to self' );
-
-
-	//TODO: check supported verbs
-	//if( !$req->isSupported() )
-	//	throw new Exception( "Unsupported verb: {$req->_verb}" );
-
-	#Log::info( "{$req}" ); exit;
-
-
-
-	Log::info( "{$req}" );
-	exit;
 
 	//$request = $req->serialize();
 	//$insertRes = $col->insertOne(array(
@@ -62,14 +61,12 @@ exit;
 	//$insertID = $insertRes->getInsertedId();
 	//Log::warning( "{$insertID}" );
 
-	$res = $req->relayCurl(array(
-		'scheme' => 'https',
-		'host'   => 'api.twilio.com'
-	));
-
+	$res = $req->relayCurl();
 	//$res = $req->relayStream();
-	//Log::info( "{$res}" );
-	//exit;
+print( dump( $res ) );
+exit;
+
+	exit;
 
 	$response = $res->serialize();
 	$updateRes = $col->updateOne(
@@ -96,5 +93,5 @@ catch( Exception $ex ){
 	echo 'Oops!';
 }
 finally{
-	\Log::info( 'Duration: '.(hrtime( true ) - self::$start)/1000000000);
+	\Log::info( 'Duration: '.(hrtime( true ) - $start)/1000000000);
 }

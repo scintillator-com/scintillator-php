@@ -1,0 +1,70 @@
+/* https://json-schema.org/understanding-json-schema/index.html */
+/* https://docs.mongodb.com/manual/reference/operator/query/jsonSchema/ */
+{
+  "$id": "https://scintillator.com/schemas/moment.json",
+  "$schema": "http://json-schema.org/schema#",
+  "required": [ "request", "response", "visibility" ],
+  "org_id": {
+    "type": "object",
+    "bsonType": "objectId"
+  },
+  "user_id": {
+    "type": "object",
+    "bsonType": "objectId"
+  },
+  "visibility": {
+    "type": "string",
+    "enum": [ "public", "private" ]
+  },
+  "request": {
+    "content_length": {
+      "type": "number"
+    },
+    "content_type": {
+      "type": "string"
+    },
+    "created": {
+    },
+    "http_version": {
+      "type": "string"
+    },
+    "host": {
+      "type": "string"
+    },
+    "is_complete": {
+      "type": "boolean"
+    },
+    "is_summary": {
+      "type": "boolean"
+    },
+    "method": {
+      "type": "string"
+    },
+    "port": {
+      "type": "number"
+    },
+    "path": {
+      "type": "string"
+    },
+    "query_string": {
+      "type": "string"
+    },
+    "scheme": {
+      "type": "string"
+    },
+
+    "query_data": {
+      "type": "object"
+    },
+    "headers": {
+      "type": "object"
+    },
+    "body": {
+      "type": [ "string", "object" ]
+    },
+  },
+  "response": {
+  },
+  "timing": {
+  },
+}

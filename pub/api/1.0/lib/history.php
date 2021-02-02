@@ -14,10 +14,10 @@ final class history extends Route {
 
 		//TODO: list/search vs getDetail
 
-
+		/*
 		$this->required = array(
-			'host' => array( 'format' => 'string', 'dataKey' => 'request.host' ),
 		);
+		*/
 
 		$this->optional = array(
 			//request
@@ -26,6 +26,7 @@ final class history extends Route {
 
 			'id' => array( 'format' => 'string' ),
 
+			'host'   => array( 'format' => 'string', 'dataKey' => 'request.host'    ),
 			'method' => array( 'format' => 'string', 'dataKey' => 'request.method'  ),
 			'path'   => array( 'format' => 'string', 'dataKey' => 'request.path'    ),
 			'scheme' => array( 'format' => 'string', 'dataKey' => 'request.scheme'  ),

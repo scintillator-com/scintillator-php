@@ -40,7 +40,7 @@ final class org extends Route{
 
 
 		$org = new \Models\Org( $data );
-		$org->client_key = base64_encode( random_bytes( 24 ) ); //32 base64 chars
+		$org->client_key = Configuration::load()->generateClientKey();
 		$org->created    = $org->modified = new MongoDB\BSON\UTCDateTime();
 		$org->created_by = $user->getID();
 		$org->admins     = array( $this->session->user_id );

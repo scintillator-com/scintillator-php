@@ -21,11 +21,15 @@ abstract class Route{
 	}
 
 	protected final function json(){
-		if( $this->request->method === 'GET' )
+		if( $this->request->method === 'GET' ){
+			$this->response->setContentType( 'application/json' );
 			return $this;
+		}
 
-		if( $this->request->method === 'OPTIONS' )
+		if( $this->request->method === 'OPTIONS' ){
+			$this->response->setContentType( 'application/json' );
 			return $this;
+		}
 
 
 		if( !empty( $this->request->headers['content-type'] ) ){

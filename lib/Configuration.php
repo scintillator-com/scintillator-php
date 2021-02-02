@@ -2,7 +2,11 @@
 final class Configuration{
 	private final function __construct(){}
 
-	public final function Get( $key, $default = null ){
+	public final function generateClientKey(){
+		return base64_encode( random_bytes( 24 ) ) .'/tor'; //36 base64 chars
+	}
+
+	public final function get( $key, $default = null ){
 		if( isset( $this->{$key} ) ){
 			//Log::info( "Sending configuration attribute: {$key} = {$this->{$key}}" );
 			return $this->{$key};
@@ -16,7 +20,7 @@ final class Configuration{
 		}
 	}
 
-	public static final function Load( $hostNames=array() ){
+	public static final function load( $hostNames=array() ){
 		static $config;
 		if( !empty( $config ) )
 			return $config;

@@ -35,7 +35,7 @@ final class user extends Route{
 
 		$user = new \Models\User( $data );
 		$user->algorithm  = 'argon2id';
-		$user->client_key = base64_encode( random_bytes( 24 ) ); //32 base64 chars
+		$user->client_key = Configuration::load()->generateClientKey();
 		$user->created    = $user->modified = new \MongoDB\BSON\UTCDateTime();
 		$user->is_enabled = true;
 		$user->hash       = password_hash( $data['password'], PASSWORD_ARGON2ID );
@@ -51,16 +51,8 @@ final class user extends Route{
 		$this->_createUser( $user, $userResult );
 		$user->setID( $userResult );
 
-		$session = \Models\Session::createForUser( $user )->validate();
-		//TODO: $this->_createSession( $session, $sessResult );
-		$sessResult = $this->selectCollection( 'sessions' )->insertOne( $session );
-		if( !self::insertedOne( $sessResult ) ){
-			\Log::warning( $sessResult );
-		}
-
 		if( $creator ){
 			//TODO: add to org's users
-
 
 			$this->response->emit(array(
 				'authorization' => null,
@@ -70,6 +62,13 @@ final class user extends Route{
 			), 201 );
 		}
 		else{
+			$session = \Models\Session::createForUser( $user )->validate();
+			//TODO: $this->_createSession( $session, $sessResult );
+			$sessResult = $this->selectCollection( 'sessions' )->insertOne( $session );
+			if( !self::insertedOne( $sessResult ) ){
+				\Log::warning( $sessResult );
+			}
+
 			$this->response->emit(array(
 				'authorization' => \Models\Session::view( $session ),
 				'user' => array(
