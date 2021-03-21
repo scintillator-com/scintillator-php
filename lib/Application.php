@@ -6,25 +6,35 @@ final class Application{
 	private static $route = null;
 	private static $start = null;
 
+	public static final function explicit( $routeClass, $start ){
+		self::$start = $start;
+		self::isDeveloper();
+
+		if( self::loadRequest() ){
+			self::$route = new $routeClass( self::$request );
+			self::processRoute();
+		}
+	}
+
 	public static final function init( $libPath, $start ){
 		self::$libPath = $libPath;
 		self::$start = $start;
+		self::isDeveloper();
+	}
 
-		//define( 'ROOT', $_SERVER[ 'DOCUMENT_ROOT' ] );
-
-		$config = Configuration::Load();
-		if( !empty( $config->isDeveloper ) ){
-			if( defined( 'E_DEPRECATED' ) ){
+	private static final function isDeveloper(){
+		if( !empty( Configuration::Load()->isDeveloper ) ){
+			if( defined( 'E_DEPRECATED' ) )
 				set_error_handler( 'errors_as_exceptions', E_ALL & ~E_DEPRECATED );
-			}else{
+			else
 				set_error_handler( 'errors_as_exceptions', E_ALL );
-			}
 		}
 	}
 
 	public static final function loadRequest(){
 		try{
 			self::$request = Request::Load();
+\Log::info( self::$request->method .' '.self::$request->fullPath );
 			return true;
 		}
 		catch( Exception $ex ){
@@ -35,8 +45,7 @@ final class Application{
 	}
 
 	public static final function routeRequest(){
-		$request = self::$request;
-		$pieces = explode( '/', trim( $request->path, '/' ) );
+		$pieces = explode( '/', trim( self::$request->path, '/' ) );
 		while( $pieces ){
 			$path = self::$libPath . DS . implode( DS, $pieces ) .'.php';
 			if( file_exists( $path ) ){
@@ -53,12 +62,12 @@ final class Application{
 					\Log::warning( "Most recent class: {$lastClass}" );
 				}
 
-				self::$route = new $lastClass( $request );
+				self::$route = new $lastClass( self::$request );
 				return;
 			}
 			else{
 				$piece = array_pop( $pieces );
-				array_unshift( $request->urlArgs, $piece );
+				array_unshift( self::$request->urlArgs, $piece );
 			}
 		}
 

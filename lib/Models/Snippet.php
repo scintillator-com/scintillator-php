@@ -23,6 +23,12 @@ class Snippet extends MongoModel{
 					$this->{$key} = $val;
 			}
 		}
+
+		if( empty( $data['created'] ) ){
+			$now = new \MongoDB\BSON\UTCDateTime();
+			$this->created  = $now;
+			$this->modified = $now;
+		}
 	}
 
 
@@ -52,16 +58,21 @@ class Snippet extends MongoModel{
 			);
 		}
 
+		$now = new \MongoDB\BSON\UTCDateTime();
 		if( empty( $optional ) ){
-			$created = new \MongoDB\BSON\UTCDateTime();
 			$optional = array(
-				'created'  => array( 'format' => 'MongoDB::UTCDateTime', 'default' => $created, 'scalar' ),
-				'modified' => array( 'format' => 'MongoDB::UTCDateTime', 'default' => $created, 'scalar' )
+				'created'  => array( 'format' => 'MongoDB::UTCDateTime', 'default' => $now, 'scalar' ),
+				'modified' => array( 'format' => 'MongoDB::UTCDateTime', 'default' => $now, 'scalar' )
 			);
 		}
 
 		$data = (array)$this;
 		$remainder = \Validator::validate( $data, $required, $optional );
+		//if( empty( $data['created'] ) ){
+		//	$this->['created'] = $now;
+		//	$data['modified'] = $now;
+		//}
+
 		return true;
 	}
 }

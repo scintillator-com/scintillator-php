@@ -33,11 +33,11 @@ final class project extends Route {
 				switch( $key ){
 					/*
 					case 'created-after':
-						//$query['request.created'][ '$gte' ] = new MongoDB\BSON\UTCDateTime
+						//$query['request.created'][ '$gte' ] = new \MongoDB\BSON\UTCDateTime
 						break;
 
 					case 'created-before':
-						//$query['request.created'][ '$lte' ] = new MongoDB\BSON\UTCDateTime
+						//$query['request.created'][ '$lte' ] = new \MongoDB\BSON\UTCDateTime
 						break;
 					*/
 
@@ -72,7 +72,7 @@ final class project extends Route {
 			$responses[] = \Models\Project::formatSummary( $project );
 		}
 
-		$this->response->emit( $responses, 200 );
+		$this->response->print( $responses, 200 );
 	}
 
 
@@ -110,9 +110,7 @@ final class project extends Route {
 					'projects_adhoc' => -1
 				),
 				'$currentDate' => array(
-					'modified' => array(
-						'$type' => 'date'
-					)
+					'modified' => true
 				)
 			);
 			$res = $this->selectCollection( 'rate_limits' )->updateOne( $rlQuery, $rlUpdate );
@@ -122,9 +120,7 @@ final class project extends Route {
 					'is_locked' => false
 				),
 				'$currentDate' => array(
-					'modified' => array(
-						'$type' => 'date'
-					)
+					'modified' => true
 				)
 			);
 			$res = $this->selectCollection( 'projects' )->updateOne( $projectQuery, $projectUpdate );
@@ -137,6 +133,6 @@ final class project extends Route {
 		}
 
 		$response = \Models\Project::formatSummary( $project );
-		$this->response->emit( $response, 201 );
+		$this->response->print( $response, 201 );
 	}
 }

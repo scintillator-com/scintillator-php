@@ -3,7 +3,8 @@
 namespace Models;
 
 class RateLimit extends MongoModel{
-	//client_key unique
+	//db.rate_limits.createIndex({ "org_id" :         1 }, { "name": "org_id",         "unique": true })
+	//db.rate_limits.createIndex({ "org_client_key" : 1 }, { "name": "org_client_key", "unique": true })
 
 	//BASE:
 	//protected $_id;

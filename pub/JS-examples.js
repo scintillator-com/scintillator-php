@@ -1,63 +1,4 @@
-/POST Axios
- 
-//method 1
-axios.post('https://jsonplaceholder.typicode.com/todos/1',{name:'saurav'})
-    .then((response)=>{
-        console.log(response)
-    })
-    .catch((e)=>{
-        console.log(e)
-    })
- 
-//method 2
-axios({
-  method: 'post',
-  url: 'https://jsonplaceholder.typicode.com/todos/1',
-  data: {
-    name: 'Saurav',
-  }
-})
- .then((response)=>{
-        console.log(response)
-})
-.catch((e)=>{
-        console.log(e)
-})
- 
- 
-//GET Axios
- 
-//method 1
-axios.get('https://jsonplaceholder.typicode.com/todos/1',{params:{name:'saurav'}})
-    .then((response)=>{
-        console.log(response)
-    })
-    .catch((e)=>{
-        console.log(e)
-    })
- 
-//GET Fetch
- 
-fetch(`https://jsonplaceholder.typicode.com/todos/1?name=saurav`)
-    .then((response)=>{
-        console.log(response.json())
-    })
-    .catch((e)=>{
-        console.log(e)
-    })
- 
-//POST Fetch
-fetch(`https://jsonplaceholder.typicode.com/todos/1?name=saurav`, {
-    method: 'post',
-    body: JSON.stringify({name:'saurav'})
-  })
-    .then((response)=>{
-        console.log(response.json())
-    })
-    .catch((e)=>{
-        console.log(e)
-    })
- 
+
  
 //JQuery Ajax GET
  
@@ -114,3 +55,28 @@ xhr.onreadystatechange = function() {
 }
 xhr.open('POST', `https://jsonplaceholder.typicode.com/todos/1?name=saurav`, true);
 xhr.send('name=saurav');
+
+
+
+
+
+
+
+
+
+<?php
+// Create a stream
+$opts = array(
+  'http'=>array(
+    'method'=>"GET",
+    'header'=>"Accept-language: en\r\n" .
+              "Cookie: foo=bar\r\n"
+    'content' => $body,
+  )
+);
+
+$context = stream_context_create($opts);
+
+// Open the file using the HTTP headers set above
+$file = file_get_contents('http://www.example.com/', false, $context);
+?>

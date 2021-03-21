@@ -27,17 +27,17 @@ final class Request{
 					break;
 
 				case JSON_ERROR_DEPTH:
-					throw new Exception( "Server received complex JSON from client, reduce nesting.", 400 );
+					throw new \Exception( "Server received complex JSON from client, reduce nesting.", 400 );
 
 				case JSON_ERROR_STATE_MISMATCH:
 				case JSON_ERROR_SYNTAX:
-					throw new Exception( "Server received malformed JSON from client.", 400 );
+					throw new \Exception( "Server received malformed JSON from client.", 400 );
 
 				case JSON_ERROR_CTRL_CHAR:
-					throw new Exception( "Server received unexpected control character from client.", 400 );
+					throw new \Exception( "Server received unexpected control character from client.", 400 );
 
 				case JSON_ERROR_UTF8:
-					throw new Exception( "Server received malformed UTF-8 encodings from client.", 400 );
+					throw new \Exception( "Server received malformed UTF-8 encodings from client.", 400 );
 
 				default:
 					$this->throwBadRequest();
@@ -146,7 +146,7 @@ final class Request{
 	}
 
 	public function throwBadRequest(){
-		throw new Exception( "Bad Request", 400 );
+		throw new \Exception( "Bad Request", 400 );
 	}
 
 	public function __toString(){

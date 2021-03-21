@@ -12,40 +12,30 @@ final class snippet extends Route {
 	public final function POST(){
 		$this->json();
 
-		$config = new stdClass();
-		$config->required = array();
-		$config->optional = array(
-			"decode"        => array( 'format' => 'boolean', 'scalar' ),
-			"method"        => array( 'format' => 'string', 'scalar' ),
-			"body_params"   => array( 'format' => 'string', 'default' => array(), 'array' ),
-			"header_params" => array( 'format' => 'string', 'default' => array(), 'array' ),
-			"query_params"  => array( 'format' => 'string', 'default' => array(), 'array' )
-		);
-
-
-		$formatter = new stdClass();
-		$formatter->required = array(
-			"name"     => array( 'format' => 'string', 'scalar' ),
-			"language" => array( 'format' => 'string', 'scalar' ),
-			"library"  => array( 'format' => 'string', 'scalar' )
-		);
-		$formatter->optional = array(
-		);
-
-
 		$this->required = array(
 			'moment_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
-			'config'    => array( 'format' => 'object', 'object' => $config ),
-			'formatter' => array( 'format' => 'object', 'object' => $formatter )
+			'config'    => array( 'format' => 'object', 'object' => (object)array(
+				'required' => array(),
+				'optional' => array(
+					'decode'        => array( 'format' => 'boolean', 'scalar' ),
+					'method'        => array( 'format' => 'string', 'scalar' ),
+					'body_params'   => array( 'format' => 'string', 'default' => array(), 'array' ),
+					'header_params' => array( 'format' => 'string', 'default' => array(), 'array' ),
+					'query_params'  => array( 'format' => 'string', 'default' => array(), 'array' )
+				)
+			)),
+			'formatter' => array( 'format' => 'object', 'object' => (object)array(
+				'required' => array(
+					'name'     => array( 'format' => 'string', 'scalar' ),
+					'language' => array( 'format' => 'string', 'scalar' ),
+					'library'  => array( 'format' => 'string', 'scalar' )
+				),
+				'optional' => array()
+			))
 		);
 		$this->optional = array();
 		$data = $this->validate();
-
-
-
-		//TODO: optional, depending on Moment
-		$this->authorize();
-
+		$this->checkMoment( $data['moment_id'] );
 
 		$snippet = new \Models\Snippet( $data );
 		//sets created and modified
@@ -53,45 +43,40 @@ final class snippet extends Route {
 
 		$result = $this->selectCollection( 'snippets' )->insertOne( $snippet );
 		$snippet_id = $result->getInsertedId();
-		$this->response->emit( array( 'snippet_id' => "{$snippet_id}" ), 201 );
+		$this->response->print( array( 'snippet_id' => "{$snippet_id}" ), 201 );
 	}
 
 	public final function PUT(){
 		$this->json();
-
-		$config = new stdClass();
-		$config->required = array();
-		$config->optional = array(
-			"method"        => array( 'format' => 'string', 'scalar' ),
-			"decode"        => array( 'format' => 'boolean', 'scalar' ),
-			"body_params"   => array( 'format' => 'string', 'default' => array(), 'array' ),
-			"header_params" => array( 'format' => 'string', 'default' => array(), 'array' ),
-			"query_params"  => array( 'format' => 'string', 'default' => array(), 'array' )
-		);
-
-		$formatter = new stdClass();
-		$formatter->required = array(
-			"name"     => array( 'format' => 'string', 'scalar' ),
-			"language" => array( 'format' => 'string', 'scalar' ),
-			"library"  => array( 'format' => 'string', 'scalar' )
-		);
-		$formatter->optional = array();
-
 		$this->required = array(
 			'snippet_id' => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
 			'moment_id'  => array( 'format' => 'MongoDB::ObjectId', 'scalar' ),
-			'config'     => array( 'format' => 'object', 'object' => $config ),
-			'formatter'  => array( 'format' => 'object', 'object' => $formatter )
+			'config'     => array( 'format' => 'object', 'object' => (object)array(
+				'required' => array(),
+				'optional' => array(
+					'decode'        => array( 'format' => 'boolean', 'scalar' ),
+					'method'        => array( 'format' => 'string', 'scalar' ),
+					'body_params'   => array( 'format' => 'string', 'default' => array(), 'array' ),
+					'header_params' => array( 'format' => 'string', 'default' => array(), 'array' ),
+					'query_params'  => array( 'format' => 'string', 'default' => array(), 'array' )
+				)
+			)),
+			'formatter' => array( 'format' => 'object', 'object' => (object)array(
+				'required' => array(
+					'name'     => array( 'format' => 'string', 'scalar' ),
+					'language' => array( 'format' => 'string', 'scalar' ),
+					'library'  => array( 'format' => 'string', 'scalar' )
+				),
+				'optional' => array()
+			))
 		);
 		$this->optional = array();
 		$data = $this->validate();
-		
-		
-		//TODO: optional, depending on Moment
-		$this->authorize();
-		
-		$snippet = new Snippet( $data );
+		$this->checkMoment( $data['moment_id'] );
+
+		$snippet = new \Models\Snippet( $data );
 		$snippet->validate();
+\Log::info( 'validated' );
 
 		$query = array(
 			'_id' => $data['snippet_id' ]
@@ -104,9 +89,7 @@ final class snippet extends Route {
 				'formatter' => $snippet->formatter
 			),
 			'$currentDate' => array(
-				'modified' => array(
-					'$type' => 'date'
-				)
+				'modified' => true
 			)
 		);
 		$result = $this->selectCollection( 'snippets' )->updateOne( $query, $update );
@@ -117,6 +100,18 @@ final class snippet extends Route {
 			'updated' => $result->getModifiedCount()
 		);
 		
-		$this->response->emit( $response, 201 );
+		$this->response->print( $response, 201 );
+	}
+
+
+	private function checkMoment( $moment_id ){
+		$momentQuery = array( '_id' => $moment_id );
+		$momentResult = $this->selectCollection( 'moments' )->findOne( $momentQuery, array( 'visibility' => 1 ));
+		if( $momentResult ){
+			if( $momentResult->visibility === 'private' )
+				$this->authorize();
+		}
+		else
+			throw new Exception( "Moment not found: {$moment_id}", 404 );
 	}
 }

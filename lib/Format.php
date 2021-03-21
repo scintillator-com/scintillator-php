@@ -13,10 +13,10 @@ class Format{
 
 	public function __call( $name, $args ){
 		if( !isset( $this->{$name} ) )
-			throw new Exception( "Format member is not defined: {$this->name}->{$name}." );
+			throw new \Exception( "Format member is not defined: {$this->name}->{$name}." );
 
 		if( !is_callable( $this->{$name} ) )
-			throw new Exception( "Format member is not callable: {$this->name}->{$name}." );
+			throw new \Exception( "Format member is not callable: {$this->name}->{$name}." );
 
 		return call_user_func_array( $this->{$name}, $args);
 	}
@@ -52,10 +52,9 @@ class Format{
 
 	public function throwValidationError( $param, $value ){
 		if( $this->name == "string" )
-			throw new Exception( "The '{$param}' parameter must be formatted as a non-empty {$this->name}.", 422 );
-		
+			throw new \Exception( "The '{$param}' parameter must be formatted as a non-empty {$this->name}.", 422 );
 		else
-			throw new Exception( "The '{$param}' parameter must be formatted as a(n) {$this->name}.", 422 );
+			throw new \Exception( "The '{$param}' parameter must be formatted as a(n) {$this->name}.", 422 );
 	}
 
   	public static function get( $attributes ){
@@ -72,7 +71,7 @@ class Format{
 			return self::$formats[ $name ]->configure( $attributes );
 		}
 		else{
-			throw new Exception( "Format not defined: {$name}.", 500 );
+			throw new \Exception( "Format not defined: {$name}.", 500 );
 		}
   	}
 
@@ -202,7 +201,7 @@ class Format{
 					new MongoDB\BSON\ObjectId( $val );
 					return true;
 				}
-				catch( Exception $_ ){
+				catch( \Exception $_ ){
 					return false;
 				}
 			}
@@ -224,7 +223,7 @@ class Format{
 					new MongoDB\BSON\UTCDateTime( $val );
 					return true;
 				}
-				catch( Exception $_ ){
+				catch( \Exception $_ ){
 					return false;
 				}
 			}

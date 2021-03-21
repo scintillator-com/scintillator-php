@@ -1,7 +1,9 @@
 <?php
 //$start = microtime( true );
 $start = hrtime( true );
-define( 'LIB', dirname( $_SERVER[ 'DOCUMENT_ROOT' ] ) . DIRECTORY_SEPARATOR .'lib' );
+
+define( 'AXIS', dirname( $_SERVER[ 'DOCUMENT_ROOT' ] ) );
+define( 'LIB',  AXIS . DIRECTORY_SEPARATOR .'lib' );
 require_once( LIB . DIRECTORY_SEPARATOR .'config.php' );
 
 Application::init( __DIR__ . DS .'lib', $start );

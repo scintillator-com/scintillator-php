@@ -37,7 +37,7 @@ class Validator{
 			$fqpm = $ns ? "{$ns}.{$param}" : "{$param}";
 			if( !isset( $data[ $param ] ) ){
 				if( $required ){
-					throw new Exception( "The '{$param}' parameter is required.", 422 );
+					throw new \Exception( "The '{$param}' parameter is required.", 422 );
 				}else if( array_key_exists( "default", $attributes ) ){
 					$reducedData[ $param ] = $attributes[ "default" ];
 				}
@@ -48,7 +48,7 @@ class Validator{
 			if( !empty( $attributes[ 'requires' ] ) ){
 				foreach( (array)$attributes[ 'requires' ] as $req ){
 					if( !isset( $data[ $req ] ) )
-						throw new Exception( "When using the '{$param}' parameter, the '{$req}' parameter is also required.", 422 );
+						throw new \Exception( "When using the '{$param}' parameter, the '{$req}' parameter is also required.", 422 );
 				}
 			}
 
@@ -56,7 +56,7 @@ class Validator{
 			$format = Format::get( $attributes );
 			if( is_numeric_array( $value ) ){
 				if( in_array( 'scalar', $attributes, true ) )
-					throw new Exception( "The '{$param}' parameter must be scalar.", 422 );
+					throw new \Exception( "The '{$param}' parameter must be scalar.", 422 );
 
 				if( !$format->isValidArray( $value ) )
 					$format->throwValidationError( $param, $value );
@@ -72,7 +72,7 @@ class Validator{
 			}
 			else{
 				if( in_array( 'array', $attributes, true ) )
-					throw new Exception( "The '{$param}' parameter must be an array.", 422 );
+					throw new \Exception( "The '{$param}' parameter must be an array.", 422 );
 
 				if( !$format->isValidScalar( $value ) )
 					$format->throwValidationError( $param, $value );
@@ -114,7 +114,7 @@ class Validator{
 
 		sort( $any );
 		$combined = "'". implode( "', '", $any ) ."'";
-		throw new Exception( "At least one of the following parameters is required: {$combined}", 422 );
+		throw new \Exception( "At least one of the following parameters is required: {$combined}", 422 );
 	}
 
 	private function _validateExclusive( $data ){
@@ -127,7 +127,7 @@ class Validator{
 
 			foreach( (array)$attributes[ 'exclusive' ] as $ex ){
 				if( isset( $data[ $ex ] ) )
-					throw new Exception( "The following parameters are mutually exclusive: '{$param}', '{$ex}'", 409 );
+					throw new \Exception( "The following parameters are mutually exclusive: '{$param}', '{$ex}'", 409 );
 			}
 		}
 	}
@@ -137,16 +137,16 @@ class Validator{
 		foreach( $values as $v ){
 			if( strlen( $v ) < $min ){
 				if( $max == $min )
-					throw new Exception( "The '{$param}' parameter must have length {$min}.", 422 );
+					throw new \Exception( "The '{$param}' parameter must have length {$min}.", 422 );
 
 				if( $max == PHP_INT_MAX )
-					throw new Exception( "The '{$param}' parameter must have length {$min} or greater.", 422 );
+					throw new \Exception( "The '{$param}' parameter must have length {$min} or greater.", 422 );
 
-				throw new Exception( "The '{$param}' parameter must have length between {$min} and {$max}.", 422 );
+				throw new \Exception( "The '{$param}' parameter must have length between {$min} and {$max}.", 422 );
 			}
 
 			if( strlen( $v ) > $max )
-				throw new Exception( "The '{$param}' parameter must have length between {$min} and {$max}.", 422 );
+				throw new \Exception( "The '{$param}' parameter must have length between {$min} and {$max}.", 422 );
 		}
 	}
 
@@ -155,13 +155,13 @@ class Validator{
 		foreach( $values as &$v ){
 			if( $v < $min ){
 				if( $max == PHP_INT_MAX )
-					throw new Exception( "The '{$param}' parameter must be greater than or equal to {$min}.", 422 );
+					throw new \Exception( "The '{$param}' parameter must be greater than or equal to {$min}.", 422 );
 				else
-					throw new Exception( "The '{$param}' parameter must be between {$min} and {$max}.", 422 );
+					throw new \Exception( "The '{$param}' parameter must be between {$min} and {$max}.", 422 );
 			}
 
 			if( $v > $max )
-				throw new Exception( "The '{$param}' parameter must be between {$min} and {$max}.", 422 );
+				throw new \Exception( "The '{$param}' parameter must be between {$min} and {$max}.", 422 );
 		}
 	}
 }

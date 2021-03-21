@@ -106,11 +106,6 @@ final class Response{
 		ob_end_flush();
 	}
 
-	public final function json(){
-		$this->_setFormatter( 'json' );
-		return $this;
-	}
-
 	public final function loadContentType(){
 		if( function_exists( 'getallheaders' ) ){
 			foreach( getallheaders() as $k => &$v ){
@@ -130,10 +125,10 @@ final class Response{
 		return $this;
 	}
 
-	public final function print( $content, $replace=true, $code=null ){
+	public final function print( $content, $code=null, $replace=true ){
 		if( headers_sent() ){
 			if( $this->_isChunked ){
-				
+				//ok
 			}
 			else{
 				\Log::error( "Output already started" );
@@ -196,11 +191,6 @@ final class Response{
 		return $this;
 	}
 
-	public final function text(){
-		$this->_setFormatter( 'text' );
-		return $this;
-	}
-
 	private final function _emitChunk( $chunk ){
 		$hexLength = dechex( strlen( $chunk ) );
 		print( "{$hexLength}{$this->eol}{$chunk}{$this->eol}" );
@@ -243,18 +233,27 @@ final class Response{
 		$types = parse_tuple_header( $contentType );
 		foreach( $types as $type => $attributes ){
 			switch( $type ){
+				case 'html':
+				case 'text/html':
+				case 'application/xhtml+xml':
+					$this->_contentType = 'text/html';
+					$this->formatter = new Formatter_Text();
+					return;
+
 				case 'json':
 				case 'application/json':
 					$this->_contentType = 'application/json';
 					$this->formatter = new Formatter_JSON();
 					return;
 
-				//case 'text/html':
-				//case 'application/xhtml+xml':
-
-				case '*/*':
 				case 'text':
 				case 'text/plain':
+					$this->_contentType = 'text/plain';
+					$this->formatter = new Formatter_Text();
+					return;
+
+				case '*/*':
+				default:
 					$this->_contentType = 'text/plain';
 					$this->formatter = new Formatter_Text();
 					return;

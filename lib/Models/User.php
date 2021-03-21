@@ -20,6 +20,7 @@ class User extends MongoModel{
 	public $hash;
 	public $last_login;
 	public $last_name;
+	public $login_history;
 	public $modified;
 	public $org_id;
 	public $username;
@@ -42,11 +43,17 @@ class User extends MongoModel{
 	}
 
 	public final static function onLogin( $user ){
+		$now = new \MongoDB\BSON\UTCDateTime();
 		$update = array(
-			'$currentDate' => array(
-				'last_login' => array(
-					'$type' => 'date'
+			'$push' => array(
+				'login_history' => array(
+					'$each'     => array( $now ),
+					'$position' => 0,
+					'$slice'    => 3
 				)
+			),
+			'$set'  => array(
+				'last_login'    => $now
 			)
 		);
 
@@ -63,6 +70,7 @@ class User extends MongoModel{
 			'first_name' => array( 'format' => 'string', 'length' => array( 1, 32 ), 'scalar' ),
 			'hash'       => array( 'format' => 'string', 'scalar' ),
 			'last_name'  => array( 'format' => 'string', 'length' => array( 1, 32 ), 'scalar' ),
+			'login_history' => array( 'format' => 'MongoDB::UTCDateTime', 'array' ),
 			'modified'   => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
 			'username'   => array( 'format' => 'string', 'length' => array( 6, 255 ), 'scalar' ),
 		);

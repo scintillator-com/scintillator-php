@@ -1,4 +1,4 @@
-# Git
+# Git2s
 ## Pre-setup
 To deploy private repo, generate PAT with full `repo` permissions
 ref: https://stackoverflow.com/questions/42148841/github-clone-with-oauth-access-token
@@ -81,10 +81,10 @@ cd ~/sites
 git clone https://github.com/scintillator-com/scintillator-php.git
 cd scintillator-php
 git checkout develop
-/usr/local/bin/php-composer.sh
-
-sudo ln -s ./pub/api /usr/share/nginx/html/api
-sudo ln -s ./lib     /usr/share/nginx/lib
+/usr/local/bin/php-composer.sh install
+cd
+sudo ln -s ~/sites/scintillator-php/lib     /usr/share/nginx/lib
+sudo ln -s ~/sites/scintillator-php/pub/api /usr/share/nginx/html/api
 ```
 
 
@@ -98,7 +98,7 @@ location /api/1.0/ {
     try_files $uri /api/1.0/index.php?$args;
 }
 
-location ~ \.(css|gif|ico|jpg|jpeg|js|png)$ {
+location ~ \.(css|csv|doc|gif|ico|jpg|jpeg|js|png|xls|xlsx)$ {
     try_files $uri =404;
 }
 ```
@@ -139,10 +139,12 @@ sudo systemctl enable mongod
 ### Create Local User
 ```
 sudo useradd -m -U herodev
-sudo passwd herodev
 sudo usermod -a -G wheel herodev
-
-certs?
+sudo mkdir /home/herodev/.ssh
+sudo vim /home/herodev/.ssh/authorized_keys
+sudo chown -R herodev:herodev /home/herodev/.ssh
+sudo chmod -R go=-rww /home/herodev/.ssh
+sudo chmod -R u=rwX /home/herodev/.ssh
 ```
 
 ### Instal Git Projects

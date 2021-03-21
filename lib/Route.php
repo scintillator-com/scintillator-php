@@ -20,35 +20,6 @@ abstract class Route{
 		}
 	}
 
-	protected final function json(){
-		if( $this->request->method === 'GET' ){
-			$this->response->setContentType( 'application/json' );
-			return $this;
-		}
-
-		if( $this->request->method === 'OPTIONS' ){
-			$this->response->setContentType( 'application/json' );
-			return $this;
-		}
-
-
-		if( !empty( $this->request->headers['content-type'] ) ){
-			if( !$this->request->isContentType( 'application/json' ) )
-				throw new Exception( "Unsupported content type: {$this->request->headers['content-type']}", 422 );
-		}
-		else
-			throw new Exception( "Unspecified content type", 422 );
-
-
-		$this->request->data = $this->request->getParseJSON();
-		if( empty( $this->request->data ) )
-			throw new Exception( "Can't parse data", 422 );
-
-
-		$this->response->setContentType( 'application/json' );
-		return $this;
-	}
-
 	public function OPTIONS(){
 		//access-control-request-headers: content-type
 		//access-control-request-method: POST
@@ -70,10 +41,56 @@ abstract class Route{
 		try{
 			$this->{$this->request->method}();
 		}
-		catch( Exception $ex ){
+		catch( \Exception $ex ){
 			//\Log::error( $ex );
 			//TODO: clone?  track old response?
 			$this->response->emitException( $ex );
+		}
+	}
+
+
+	protected final function html(){
+		if( $this->request->method === 'GET' || 
+			$this->request->method === 'OPTIONS' ){
+			$this->response->setContentType( 'html' );
+			return $this;
+		}
+		else{
+			if( !empty( $this->request->headers['content-type'] ) ){
+				if( !$this->request->isContentType( 'text/html' ) )
+					throw new \Exception( "Unsupported content type: {$this->request->headers['content-type']}", 422 );
+			}
+			else
+				throw new \Exception( "Unspecified content type", 422 );
+
+
+			$this->response->setContentType( 'text/html' );
+			return $this;
+		}
+	}
+
+	protected final function json(){
+		if( $this->request->method === 'GET' ||
+			$this->request->method === 'OPTIONS' ){
+			$this->response->setContentType( 'json' );
+			return $this;
+		}
+		else{
+			if( !empty( $this->request->headers['content-type'] ) ){
+				if( !$this->request->isContentType( 'application/json' ) )
+					throw new \Exception( "Unsupported content type: {$this->request->headers['content-type']}", 422 );
+			}
+			else
+				throw new \Exception( "Unspecified content type", 422 );
+
+
+			$this->request->data = $this->request->getParseJSON();
+			if( empty( $this->request->data ) )
+				throw new \Exception( "Can't parse data", 422 );
+
+
+			$this->response->setContentType( 'application/json' );
+			return $this;
 		}
 	}
 
@@ -83,6 +100,26 @@ abstract class Route{
 		$this->optional[ 'page'     ] = array( 'format' => 'integer', 'default' => 1,        'range' => array( 1, PHP_INT_MAX ), 'scalar' );
 		$this->optional[ 'pageSize' ] = array( 'format' => 'integer', 'default' => $default, 'range' => array( 1, $max ), 'scalar' );
 		return $this;
+	}
+
+	protected final function text(){
+		if( $this->request->method === 'GET' ||
+			$this->request->method === 'OPTIONS' ){
+			$this->response->setContentType( 'text' );
+			return $this;
+		}
+		else{
+			if( !empty( $this->request->headers['content-type'] ) ){
+				if( !$this->request->isContentType( 'text/plain' ) )
+					throw new \Exception( "Unsupported content type: {$this->request->headers['content-type']}", 422 );
+			}
+			else
+				throw new \Exception( "Unspecified content type", 422 );
+
+
+			$this->response->setContentType( 'text' );
+			return $this;
+		}
 	}
 
 	/*

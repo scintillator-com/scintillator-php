@@ -41,7 +41,7 @@ final class org extends Route{
 
 		$org = new \Models\Org( $data );
 		$org->client_key = Configuration::load()->generateClientKey();
-		$org->created    = $org->modified = new MongoDB\BSON\UTCDateTime();
+		$org->created    = $org->modified = new \MongoDB\BSON\UTCDateTime();
 		$org->created_by = $user->getID();
 		$org->admins     = array( $this->session->user_id );
 		$org->users      = array( $this->session->user_id );
@@ -65,7 +65,7 @@ final class org extends Route{
 			$session = $newSession;
 		}
 
-		$this->response->emit( array(
+		$this->response->print( array(
 			'authorization' => \Models\Session::view( $session ),
 			'org' => array(
 				'client_key' => $org->client_key

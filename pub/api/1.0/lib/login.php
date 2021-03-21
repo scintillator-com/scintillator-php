@@ -17,9 +17,9 @@ final class login extends Route {
 		);
 		$this->optional = array();
 		$data = $this->validate();
-
 		$user = $this->validateUser( $data );
 		$this->validateOrg( $user );
+		
 		$query = array( '_id' => $user->getID() );
 		$userResult = $this->selectCollection( 'users' )->updateOne( $query, \Models\User::onLogin( $user ) );
 		self::updatedOne( $userResult );
@@ -82,14 +82,14 @@ final class login extends Route {
 
 		$user = $this->selectCollection( 'users' )->findOne( $query, $options );
 		if( $user && $user->is_enabled ){
-			if( password_verify( $data['password'], $user->hash ) )
+			if( password_verify( $data['password'], $user->hash ) ){
 				return new \Models\User( $user );
-			else
+			}
+			else{
 				throw new Exception( 'Not Authorized', 401 );			
+			}
 		}
 		else{
-			//waste some time
-			password_verify( '1234567890123456', 'abcdefghijklmnop' );
 			throw new Exception( 'Not Authorized', 401 );
 		}
 	}

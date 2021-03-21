@@ -54,7 +54,8 @@ final class user extends Route{
 		if( $creator ){
 			//TODO: add to org's users
 
-			$this->response->emit(array(
+
+			$this->response->print(array(
 				'authorization' => null,
 				'user' => array(
 					'client_key' => $user->client_key
@@ -69,7 +70,7 @@ final class user extends Route{
 				\Log::warning( $sessResult );
 			}
 
-			$this->response->emit(array(
+			$this->response->print(array(
 				'authorization' => \Models\Session::view( $session ),
 				'user' => array(
 					'client_key' => $user->client_key
