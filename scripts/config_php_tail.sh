@@ -1,4 +1,6 @@
 
+OVERRIDE_PATH=/tmp/override.conf
+
 echo "=== Configuration Report ==="
 echo "= IS_DEV: [${IS_DEV}]"
 echo "= MONGO_DB: [${MONGO_DB}]"
@@ -15,10 +17,10 @@ function upsert(){
   grep -Fq "Environment=\"${key}=" "${path}"
   if [ $? -eq 0 ]; then
 	  # update
-    sed -i "s/^Environment=\"${key}=.*/Environment=\"${key}=${value}\"/" "${path}"
+    sudo sed -i "s|^Environment=\"${key}=.*|Environment=\"${key}=${value}\"|" "${path}"
   else
 	  # append
-    echo "Environment=\"${key}=${value}\"" | tee -a "${path}"
+    echo "Environment=\"${key}=${value}\"" | sudo tee -a "${path}"
   fi
 }
 
@@ -28,10 +30,7 @@ if [ ! -f "${OVERRIDE_PATH}" ]; then
 EOF"
 fi
 
-sudo upsert IS_DEV $IS_DEV $OVERRIDE_PATH
-sudo upsert MONGO_DB $MONGO_DB $OVERRIDE_PATH
-sudo upsert MONGO_URI $MONGO_URI $OVERRIDE_PATH
-sudo upsert SESSION_LIMITS $SESSION_LIMITS $OVERRIDE_PATH
-
-sudo systemctl daemon-reload
-sudo systemctl restart php-fpm.service
+upsert IS_DEV $IS_DEV $OVERRIDE_PATH
+upsert MONGO_DB $MONGO_DB $OVERRIDE_PATH
+upsert MONGO_URI $MONGO_URI $OVERRIDE_PATH
+upsert SESSION_LIMITS $SESSION_LIMITS $OVERRIDE_PATH
