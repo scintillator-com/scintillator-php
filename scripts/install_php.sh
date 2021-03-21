@@ -2,9 +2,8 @@
 
 # Infrastructure
 sudo yum update -y
-sudo amazon-linux-extras enable php7.4
+sudo amazon-linux-extras enable nginx1 php7.4
 sudo yum clean metadata
-sudo yum install -y git python38
 sudo yum install -y gcc git nginx php php-devel php-fpm php-pear
 
 
@@ -67,9 +66,9 @@ sudo sed -i 's/^user =.*/user = nginx/'          /etc/php-fpm.d/www.conf
 sudo sed -i 's/^group =.*/group = nginx/'        /etc/php-fpm.d/www.conf
 
 echo "Securing /var/log/php-fpm/..."
-sudo chown -R nginx:nginx /var/log/php-fpm
-sudo chmod -R ug=rwX /var/log/php-fpm
-sudo chmod -R o=-rwx /var/log/php-fpm
+sudo chown -R nginx:nginx /var/log/php-fpm/
+sudo chmod -R ug=rwX /var/log/php-fpm/
+sudo chmod -R o=-rwx /var/log/php-fpm/
 
 # PHP-FPM: Enable
 echo "Enable php-fpm.service..."
@@ -81,8 +80,8 @@ sudo systemctl enable php-fpm.service
 if [ -f /usr/local/bin/composer ]; then
   echo "Composer has already been installed..."
 else
-  if [ ! -d ~/composer ]; then
-    mkdir ~/composer
+  if [ ! -d ~/composer/ ]; then
+    mkdir ~/composer/
   fi
   cd ~/composer/
   expected_hash=$( curl -sS https://composer.github.io/installer.sig )
@@ -96,7 +95,7 @@ else
     exit 1
   fi
 
-  sudo php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+  sudo php composer-setup.php --install-dir=/usr/local/bin/ --filename=composer
 fi
 
 
@@ -112,11 +111,11 @@ fi
 
 
 echo "Securing /usr/share/nginx/html/..."
-sudo chown -R nginx:nginx /usr/share/nginx/html
-sudo chmod -R ug=rX /usr/share/nginx/html
-sudo chmod -R o=-rwx /usr/share/nginx/html
+sudo chown -R nginx:nginx /usr/share/nginx/html/
+sudo chmod -R ug=rX /usr/share/nginx/html/
+sudo chmod -R o=-rwx /usr/share/nginx/html/
 
 echo "Securing /usr/share/nginx/lib/..."
-sudo chown -R nginx:nginx /usr/share/nginx/lib
-sudo chmod -R ug=rX /usr/share/nginx/lib
-sudo chmod -R o=-rwx /usr/share/nginx/lib
+sudo chown -R nginx:nginx /usr/share/nginx/lib/
+sudo chmod -R ug=rX /usr/share/nginx/lib/
+sudo chmod -R o=-rwx /usr/share/nginx/lib/
