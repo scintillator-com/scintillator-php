@@ -74,7 +74,7 @@ sudo chmod -R o=-rwx /var/log/php-fpm/
 echo "Enable php-fpm.service..."
 sudo systemctl enable php-fpm.service
 
-
+: <<'END'
 # Composer: Install
 #COMPOSER_DIR=/usr/local/bin/
 if [ -f /usr/local/bin/composer ]; then
@@ -108,14 +108,12 @@ else
   echo "$(which php) $(which composer) \$@" | sudo tee -a /usr/local/bin/php-composer.sh
   sudo chmod 0755 /usr/local/bin/php-composer.sh
 fi
+END
 
 
-echo "Securing /usr/share/nginx/html/..."
-sudo chown -R nginx:nginx /usr/share/nginx/html/
-sudo chmod -R ug=rX /usr/share/nginx/html/
-sudo chmod -R o=-rwx /usr/share/nginx/html/
-
-echo "Securing /usr/share/nginx/lib/..."
-sudo chown -R nginx:nginx /usr/share/nginx/lib/
-sudo chmod -R ug=rX /usr/share/nginx/lib/
-sudo chmod -R o=-rwx /usr/share/nginx/lib/
+for dir in html lib scripts vendor; do
+  echo "Securing /usr/share/nginx/${dir}/"
+  sudo chown -R nginx:nginx "/usr/share/nginx/${dir}/"
+  sudo chmod -R ug=rX "/usr/share/nginx/${dir}/"
+  sudo chmod -R o=-rwx "/usr/share/nginx/${dir}/"
+done

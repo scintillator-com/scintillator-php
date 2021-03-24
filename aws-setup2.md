@@ -95,7 +95,7 @@ EOF'
 ---
 **Install**
 ```
-mkdir ~/composer
+mkdir ~/composer/
 cd ~/composer/
 curl -sS https://getcomposer.org/installer -o composer-setup.php
 HASH=`curl -sS https://composer.github.io/installer.sig`
