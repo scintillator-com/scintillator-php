@@ -16,6 +16,7 @@ class User extends MongoModel{
 	public $created_by;
 	public $email;
 	public $is_enabled;
+	public $is_verified;
 	public $first_name;
 	public $hash;
 	public $last_login;
@@ -67,6 +68,7 @@ class User extends MongoModel{
 			'created'    => array( 'format' => 'MongoDB::UTCDateTime', 'scalar' ),
 			'email'      => array( 'format' => 'string', 'length' => array( 6, 255 ), 'scalar' ),
 			'is_enabled' => array( 'format' => 'boolean', 'scalar' ),
+			'is_verified' => array( 'format' => 'boolean', 'scalar' ),
 			'first_name' => array( 'format' => 'string', 'length' => array( 1, 32 ), 'scalar' ),
 			'hash'       => array( 'format' => 'string', 'scalar' ),
 			'last_name'  => array( 'format' => 'string', 'length' => array( 1, 32 ), 'scalar' ),

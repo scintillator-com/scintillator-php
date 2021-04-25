@@ -1,7 +1,9 @@
 <?php
 final class Response{
 	public $formatter;
-	public $cors = array();
+	public $cors = array(
+		'headers' => array()
+	);
 	public $headers = array();
 
 	private $_chunks = 0;
@@ -13,6 +15,26 @@ final class Response{
 
 	public final function __construct( $contentType='*/*' ){
 		$this->setContentType( $contentType );
+	}
+
+	public final function addCors( $method, $headers=null, $origin=null ){
+		$this->cors['methods'][] = $method;
+
+		if( $headers )
+			array_splice( $this->cors['headers'], count( $this->cors['headers'] ), 0, (array)$headers );
+
+		if( $origin ){
+			if( empty( $this->cors['origin'] ) ){
+				$this->cors['origin'] = (string)$origin;
+			}
+			else if( $this->cors['origin'] === $origin ){
+				//no-op
+			}
+			else{
+				\Log::error( "Existing origin: {$this->cors['origin']};  new origin: {$origin}" );
+				throw new \Exception( 'Conflicting origin' );
+			}
+		}
 	}
 
 	public final function clearHeaders(){
@@ -205,17 +227,20 @@ final class Response{
 
 		if( !empty( $this->cors ) ){
 			if( $_SERVER[ 'REQUEST_METHOD' ] === 'OPTIONS' ){
-				$methods = implode( ',', $this->cors['methods'] );
+				$methods = implode( ',', unique( $this->cors['methods'] ));
 				header( "Access-Control-Allow-Methods: {$methods}" );
 			}
 
 			if( !empty( $this->cors['headers'] ) ){
-				$headers = implode( ',', $this->cors['headers'] );
+				$headers = implode( ',', unique( $this->cors['headers'] ));
 				header( "Access-Control-Allow-Headers: {$headers}" );
 			}
 
 			if( !empty( $this->cors['origin'] ) ){
 				header( "Access-Control-Allow-Origin: {$this->cors['origin']}" );
+			}
+			else{
+				header( "Access-Control-Allow-Origin: *" );
 			}
 		}
 

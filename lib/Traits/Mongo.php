@@ -1,5 +1,7 @@
 <?php
 
+namespace Traits;
+
 trait Mongo{
 	private $db;
 	private $dbName;
@@ -7,7 +9,7 @@ trait Mongo{
 	protected final function getClient(){
 		static $client;
 		if( empty( $client ) ){
-			$config = Configuration::Load();
+			$config = \Configuration::Load();
 			$client = new \MongoDB\Client( $config->mongoDB['uri'] );
 		}
 		return $client;
@@ -38,7 +40,7 @@ trait Mongo{
 			if( empty( $this->db ) ){
 				$this->getClient();
 
-				$config = Configuration::Load();
+				$config = \Configuration::Load();
 				$this->selectDatabase( $config->mongoDB['database'] );
 			}
 			
