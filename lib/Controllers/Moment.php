@@ -26,7 +26,7 @@ final class Moment extends \Route {
 		);
 		$_GET['id'] = $this->request->urlArgs[0];
 		$data = $this->validate( $_GET );
-		$query[ '_id' ] = new MongoDB\BSON\ObjectId( $data['id'] );
+		$query[ '_id' ] = new \MongoDB\BSON\ObjectId( $data['id'] );
 
 		$moment = $this->selectCollection( 'moments' )->deleteOne( $query );
 	}
@@ -45,7 +45,7 @@ final class Moment extends \Route {
 		);
 		$_GET['id'] = $this->request->urlArgs[0];
 		$data = $this->validate( $_GET );
-		$query[ '_id' ] = new MongoDB\BSON\ObjectId( $data['id'] );
+		$query[ '_id' ] = new \MongoDB\BSON\ObjectId( $data['id'] );
 
 		$moment = $this->selectCollection( 'moments' )->findOne( $query );
 		$response = \Models\Moment::formatDetail( $moment );

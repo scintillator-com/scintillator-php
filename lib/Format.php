@@ -190,7 +190,7 @@ class Format{
 			if( $val instanceof MongoDB\BSON\ObjectId )
 				return $val;
 			else
-				return new MongoDB\BSON\ObjectId( $val );
+				return new \MongoDB\BSON\ObjectId( $val );
 		};
 		self::$formats[ 'MongoDB::ObjectId' ]->isValid = function( $self, $val ){
 			if( $val instanceof MongoDB\BSON\ObjectId ){
@@ -198,7 +198,7 @@ class Format{
 			}
 			else{
 				try{
-					new MongoDB\BSON\ObjectId( $val );
+					new \MongoDB\BSON\ObjectId( $val );
 					return true;
 				}
 				catch( \Exception $_ ){
@@ -212,7 +212,7 @@ class Format{
 			if( $val instanceof MongoDB\BSON\UTCDateTime )
 				return $val;
 			else
-				return new MongoDB\BSON\UTCDateTime( $val );
+				return new \MongoDB\BSON\UTCDateTime( $val );
 		};
 		self::$formats[ 'MongoDB::UTCDateTime' ]->isValid = function( $self, $val ){
 			if( $val instanceof MongoDB\BSON\UTCDateTime ){
@@ -220,7 +220,7 @@ class Format{
 			}
 			else{
 				try{
-					new MongoDB\BSON\UTCDateTime( $val );
+					new \MongoDB\BSON\UTCDateTime( $val );
 					return true;
 				}
 				catch( \Exception $_ ){

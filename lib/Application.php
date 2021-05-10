@@ -21,8 +21,8 @@ final class Application{
 	public static final function explicit( $routeClass, $start=null ){
 		$instance = new Application( null, $start );
 		if( $instance->loadRequest() ){
-			$this->route = new $routeClass( $this->request );
-			$this->processRoute();
+			$instance->route = new $routeClass( $instance->request );
+			$instance->processRoute();
 		}
 		
 		return $instance;
@@ -46,7 +46,6 @@ final class Application{
 		while( $pieces ){
 			$path = $this->libPath . DS . implode( DS, $pieces ) .'.php';
 			if( file_exists( $path ) ){
-				$nClassesBefore = count(get_declared_classes());
 				require( $path );
 				return $this;
 			}

@@ -67,7 +67,9 @@ final class History extends \Route {
 		}
 
 
-		$momentQuery = array();
+		$momentQuery = array(
+			'org_id' => $this->session->org_id
+		);
 		$momentOptions = array(
 			'projection' => \Models\Moment::getSummaryProjection()
 		);
@@ -93,7 +95,7 @@ final class History extends \Route {
 					//	break;
 
 					//case 'id':
-					//	$momentQuery[ '_id' ] = new MongoDB\BSON\ObjectId( $value );
+					//	$momentQuery[ '_id' ] = new \MongoDB\BSON\ObjectId( $value );
 					//	break;
 
 					case 'page':
@@ -115,7 +117,6 @@ final class History extends \Route {
 			}
 		}
 
-		$momentQuery['org_id'] = $this->session->org_id;
 		$responses = array();
 		$res = $this->selectCollection( 'moments' )->find( $momentQuery, $momentOptions );
 		foreach( $res as $moment ){

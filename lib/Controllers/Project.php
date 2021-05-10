@@ -45,7 +45,7 @@ final class Project extends \Route {
 					*/
 
 					case 'id':
-						$query[ '_id' ] = new MongoDB\BSON\ObjectId( $value );
+						$query[ '_id' ] = new \MongoDB\BSON\ObjectId( $value );
 						break;
 
 					case 'page':

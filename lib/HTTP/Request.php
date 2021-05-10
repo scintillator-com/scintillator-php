@@ -126,7 +126,7 @@ Log::warn(array( $host, $_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME'] ));
 
 	public function serialize(){
 		$data = array(
-			'created' => new MongoDB\BSON\UTCDateTime(),
+			'created' => new \MongoDB\BSON\UTCDateTime(),
 			'http_version' => $this->http_version,
 			'method'  => $this->method,
 			'scheme'  => $this->scheme,
