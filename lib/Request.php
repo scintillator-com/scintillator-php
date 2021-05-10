@@ -17,6 +17,14 @@ final class Request{
 	public function __construct(){
 	}
 
+	public final function getHeader( $header ){
+		$header = strtolower( $header );
+		if( isset( $this->headers[ $header ] ) )
+			return $this->headers[ $header ];
+		else
+			return null;
+	}
+
 	public function getParseJSON(){
 		$this->rawData = file_get_contents( 'php://input' );
 
@@ -142,7 +150,7 @@ final class Request{
 	}
 
 	private function setMethod( $method ){
-		$this->method = $method;
+		$this->method = strtoupper( trim( $method ) );
 	}
 
 	public function throwBadRequest(){

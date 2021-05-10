@@ -4,7 +4,7 @@
 sudo yum update -y
 sudo amazon-linux-extras enable nginx1 php7.4
 sudo yum clean metadata
-sudo yum install -y gcc git nginx php php-devel php-fpm php-pear php-sodium
+sudo yum install -y gcc git nginx php php-devel php-fpm php-pear
 
 
 ## Configure NGINX
@@ -73,6 +73,43 @@ sudo chmod -R o=-rwx /var/log/php-fpm/
 # PHP-FPM: Enable
 echo "Enable php-fpm.service..."
 sudo systemctl enable php-fpm.service
+
+: <<'END'
+# Composer: Install
+#COMPOSER_DIR=/usr/local/bin/
+if [ -f /usr/local/bin/composer ]; then
+  echo "Composer has already been installed..."
+else
+  if [ ! -d ~/composer/ ]; then
+    mkdir ~/composer/
+  fi
+  cd ~/composer/
+  expected_hash=$( curl -sS https://composer.github.io/installer.sig )
+
+  curl -sS https://getcomposer.org/installer -o composer-setup.php
+  actual=$( sha384sum composer-setup.php | awk '{ print $1 }' )
+  if [ "${actual}" = "${expected}" ]; then
+    echo 'INFO: composer-setup.php hash is good'
+  else
+    echo 'ERROR: composer-setup.php hash hash does not match'
+    exit 1
+  fi
+
+  sudo php composer-setup.php --install-dir=/usr/local/bin/ --filename=composer
+fi
+
+
+# Composer: Helper
+if [ -f /usr/local/bin/php-composer.sh ]; then
+  echo "Composer Helper has already been created..."
+else
+  sudo touch /usr/local/bin/php-composer.sh
+  echo '#!/bin/bash' | sudo tee /usr/local/bin/php-composer.sh
+  echo "$(which php) $(which composer) \$@" | sudo tee -a /usr/local/bin/php-composer.sh
+  sudo chmod 0755 /usr/local/bin/php-composer.sh
+fi
+END
+
 
 for dir in html lib scripts vendor; do
   echo "Securing /usr/share/nginx/${dir}/"

@@ -52,7 +52,7 @@ class HTTP_Response extends HTTP_Data{
 		$content_type = $this->getContentType();
 
 		$data = array(
-			'created' => new MongoDB\BSON\UTCDateTime(),
+			'created' => new \MongoDB\BSON\UTCDateTime(),
 			'http_version' => $this->http_version,
 			'content_type' => $content_type,
 			'headers' => array(),

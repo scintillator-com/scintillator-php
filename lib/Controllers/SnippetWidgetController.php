@@ -3,7 +3,12 @@
 namespace Controllers;
 
 final class SnippetWidgetController extends \Route{
-	use \Mongo;
+	use \Traits\Mongo;
+
+	public final function __construct( \Request $request ){
+		parent::__construct( $request );
+		$this->setHandler( 'GET', array( $this, 'GET' ) );
+	}
 
 	public final function GET(){
 		$this->text();
@@ -18,7 +23,7 @@ final class SnippetWidgetController extends \Route{
 			$data = $this->validate( $_GET );
 		}
 		catch( \Exception $ex ){
-			throw new \Exception( 'Not Found', 404 );
+			throw new \Exception( 'Not Found', 404, $ex );
 			//TODO: something cute here
 		}
 

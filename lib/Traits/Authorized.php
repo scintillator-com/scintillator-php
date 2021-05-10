@@ -1,12 +1,15 @@
 <?php
+
+namespace Traits;
+
 trait Authorized{
-	use \Mongo;
+	use \Traits\Mongo;
 
 	protected $session = null;
 
 	protected final function authorize(){
 		if( empty( $this->request->headers['authorization'] ) )
-			throw new Exception( 'Not Authorized', 401 );
+			throw new \Exception( 'Not Authorized', 401 );
 
 		$token = $this->request->headers['authorization'];
 		if( strncasecmp( $token, 'bearer', 6 ) === 0 )
@@ -24,7 +27,7 @@ trait Authorized{
 			//$this->rateLimit();
 		}
 		else{
-			throw new Exception( "Session Invalid", 401 );
+			throw new \Exception( "Session Invalid", 401 );
 		}
 
 		return $this;
@@ -58,32 +61,32 @@ trait Authorized{
 			}
 			else{
 				\Log::warning( "Disabled org: {$token}" );
-				throw new Exception( "Session Invalid", 401 );
+				throw new \Exception( "Session Invalid", 401 );
 			}
 		}
 		else{
 			\Log::error( "No org: {$token}" );
-			throw new Exception( "Session Invalid", 401 );
+			throw new \Exception( "Session Invalid", 401 );
 		}
 	}
 
 	private final function validateSession( $token ){
 		if( !$this->session->is_enabled ){
 			\Log::warning( "Disabled session: {$token}" );
-			throw new Exception( "Session Invalid", 401 );
+			throw new \Exception( "Session Invalid", 401 );
 		}
 
 		if( !$this->session->isStarted() ){
 			\Log::warning( "Future session: {$token}" );
-			throw new Exception( "Session Invalid", 401 );
+			throw new \Exception( "Session Invalid", 401 );
 		}
 
 		if( $this->session->isExpired() )
-			throw new Exception( "Session Invalid", 401 );
+			throw new \Exception( "Session Invalid", 401 );
 
 		if( !$this->session->isValidDuration() ){
 			\Log::warning( "Session to long: {$token}" );			
-			throw new Exception( "Session Invalid", 401 );
+			throw new \Exception( "Session Invalid", 401 );
 		}
 	}
 
@@ -95,12 +98,12 @@ trait Authorized{
 			}
 			else{
 				\Log::warning( "Disabled user: {$token}" );
-				throw new Exception( "Session Invalid", 401 );
+				throw new \Exception( "Session Invalid", 401 );
 			}
 		}
 		else{
 			\Log::error( "No user: {$token}" );
-			throw new Exception( "Session Invalid", 401 );
+			throw new \Exception( "Session Invalid", 401 );
 		}
 	}
 }
