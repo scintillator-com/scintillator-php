@@ -5,8 +5,8 @@ final class ISO8601 extends Format{
 	}
 
 	public function configure( $attributes ){
-		$this->enum = Format::get( array( "format" => "enum", "enum" => array(1) ) );
-		$this->numeric = Format::get( array( "format" => "numeric" ) );
+		$this->enum = \Format::get( array( "format" => "enum", "enum" => array(1) ) );
+		$this->numeric = \Format::get( array( "format" => "numeric" ) );
 		return $this;
 	}
 
@@ -47,7 +47,7 @@ final class ISO8601 extends Format{
 			$minute -= (int)$mn;
 		}
 
-		$dt = new DateTime();
+		$dt = new \DateTime();
 		$dt->setDate( $year, $month, $day );
 		$dt->setTime( $hour, $minute, $second );
 
@@ -98,6 +98,6 @@ final class ISO8601 extends Format{
 	}
 
 	public function throwValidationError( $param, $value ){
-		throw new Exception( "The '{$param}' parameter must be formatted as a(n) ISO8601 date-time.", 422 );
+		throw new \Exception( "The '{$param}' parameter must be formatted as a(n) ISO8601 date-time.", 422 );
 	}
 }

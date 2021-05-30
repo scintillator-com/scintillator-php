@@ -13,7 +13,7 @@ final class Snippet_Formatter_JS_Axios extends Snippet_Formatter{
 			$headers = $this->getHeaders( $moment );
 			$queryArgs = $this->getQueryArgs( $moment );
 
-			$writer = new MemoryWriter();
+			$writer = new \MemoryWriter();
 			if( $this->snippet->config->method === 'async' ){
 				$writer->writeLine( 'async function(){' )
 					->indent();
@@ -36,13 +36,13 @@ final class Snippet_Formatter_JS_Axios extends Snippet_Formatter{
 			//	//TODO:
 			//	//URLSearchParams object.
 			//	//https://developer.mozilla.org/en-US/docs/Web/API/URL/searchParams
-			//	throw new Exception( 'Not implemented: query_params' );
+			//	throw new \Exception( 'Not implemented: query_params' );
 			//}
 			
 
 			$body = null;
 			if( !empty( $this->snippet->config->body_params ) )
-				throw new Exception( 'Not implemented: body_params' );
+				throw new \Exception( 'Not implemented: body_params' );
 
 
 			$url = $this->getURL( $moment, true );
@@ -122,7 +122,7 @@ final class Snippet_Formatter_JS_Axios extends Snippet_Formatter{
 					->writeLine( "})" );
 			}
 			else{
-				throw new Exception( "Not Implemented: method='{$this->snippet->config->method}'" );
+				throw new \Exception( "Not Implemented: method='{$this->snippet->config->method}'" );
 			}
 
 		return "{$writer}";

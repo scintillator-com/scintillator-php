@@ -12,9 +12,9 @@ class Route{
 		$this->response = new \Response();
 
 		if( $this->request->isDebug() )
-			Log::$Level = IP_ERROR_ALL;
+			\Log::$Level = IP_ERROR_ALL;
 
-		Log::debug( "REQUEST:   {$this->request}" );
+		\Log::debug( "REQUEST:   {$this->request}" );
 		if( !empty( $request->headers['accept'] ) ){
 			//\Log::warning( $request->headers['accept'] );
 			$this->response->setContentType( $request->headers['accept'] );
@@ -29,7 +29,7 @@ class Route{
 		//which method is it asking for?
 		//Access-Control-Request-Method: POST
 		
-		$this->response->formatter = new Formatter_Empty();
+		$this->response->formatter = new \Formatter_Empty();
 		$this->response->emit( null, 204 );
 	}
 

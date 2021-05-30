@@ -14,7 +14,7 @@ final class Snippet_Formatter_JS_Fetch extends Snippet_Formatter{
 			$headers = $this->getHeaders( $moment );
 			$queryArgs = $this->getQueryArgs( $moment );
 
-			$writer = new MemoryWriter();
+			$writer = new \MemoryWriter();
 			if( $this->snippet->config->method === 'async' ){
 				$writer->writeLine( 'async () => {' )
 					->indent();
@@ -23,7 +23,7 @@ final class Snippet_Formatter_JS_Fetch extends Snippet_Formatter{
 				//ok
 			}
 			else{
-				throw new Exception( "Method not implemented: '{$this->snippet->config->method}'" );
+				throw new \Exception( "Method not implemented: '{$this->snippet->config->method}'" );
 			}
 
 			$writer->writeLine( 'const init = {' )
@@ -122,7 +122,7 @@ final class Snippet_Formatter_JS_Fetch extends Snippet_Formatter{
 					->writeLine( "})" );
 			}
 			else{
-				throw new Exception( "Not Implemented: method='{$this->snippet->config->method}'" );
+				throw new \Exception( "Not Implemented: method='{$this->snippet->config->method}'" );
 			}
 
 			return "{$writer}";
@@ -242,7 +242,7 @@ if( $language === 'js' ){
 			}
 		}
 		else{
-			throw new Exception( "Unsupported platform: {$platform}" );knj 	
+			throw new \Exception( "Unsupported platform: {$platform}" );knj 	
 		}
 	}
 }

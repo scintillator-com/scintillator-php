@@ -48,7 +48,7 @@ final class Formatter_JSON extends Formatter{
 	}
 
 	private static final function _formatData( &$content ){
-		$config = Configuration::Load();
+		$config = \Configuration::Load();
 		if( !empty( $config->isDeveloper ) )
 			return json_encode( $content, JSON_PRETTY_PRINT );
 		else

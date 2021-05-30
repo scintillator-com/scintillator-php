@@ -32,7 +32,7 @@ class ObjectFormat extends Format{
 		$formatted = array();
 		foreach( $this->required as $param => $attributes ){
 			$data = $value[ $param ];
-			$format = Format::get( $attributes );
+			$format = \Format::get( $attributes );
 			if( is_numeric_array( $data ) ){
 				$formatted[ $param ] = $format->formatArray( $data );
 			}
@@ -44,7 +44,7 @@ class ObjectFormat extends Format{
 		foreach( $this->optional as $param => $attributes ){
 			if( array_key_exists( $param, $value ) ){
 				$data = $value[ $param ];
-				$format = Format::get( $attributes );
+				$format = \Format::get( $attributes );
 				if( is_numeric_array( $data ) ){
 					$formatted[ $param ] = $format->formatArray( $data );
 				}

@@ -15,7 +15,7 @@ class RateLimit extends MongoModel{
 	public $proxy_evergreen;
 
 	public static final function createForOrg( \Models\Org $org, \Models\Plan $plan ){
-		$rateLimit = new RateLimit();
+		$rateLimit = new \RateLimit();
 		$rateLimit->org_id          = $org->getID();
 		$rateLimit->org_client_key  = $org->client_key;
 		$rateLimit->proxy_adhoc     = 0;

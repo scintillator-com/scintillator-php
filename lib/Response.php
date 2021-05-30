@@ -103,7 +103,7 @@ final class Response{
 			\Log::error( "Non-HTTP exception: {$ex}" );
 
 			$code = 500;
-			$ex = new Exception( 'Internal Server Error', 500, $ex );
+			$ex = new \Exception( 'Internal Server Error', 500, $ex );
 		}
 
 		//emit error from formatting
@@ -141,7 +141,7 @@ final class Response{
 			$this->setContentType( $_SERVER[ 'HTTP_ACCEPT' ] );
 		}
 		else{
-			throw new Exception( 'Accept header not found' );
+			throw new \Exception( 'Accept header not found' );
 		}
 
 		return $this;
@@ -262,29 +262,29 @@ final class Response{
 				case 'text/html':
 				case 'application/xhtml+xml':
 					$this->_contentType = 'text/html';
-					$this->formatter = new Formatter_Text();
+					$this->formatter = new \Formatter_Text();
 					return;
 
 				case 'json':
 				case 'application/json':
 					$this->_contentType = 'application/json';
-					$this->formatter = new Formatter_JSON();
+					$this->formatter = new \Formatter_JSON();
 					return;
 
 				case 'text':
 				case 'text/plain':
 					$this->_contentType = 'text/plain';
-					$this->formatter = new Formatter_Text();
+					$this->formatter = new \Formatter_Text();
 					return;
 
 				case '*/*':
 				default:
 					$this->_contentType = 'text/plain';
-					$this->formatter = new Formatter_Text();
+					$this->formatter = new \Formatter_Text();
 					return;
 			}
 		}
 
-		throw new Exception( 'No supported formats', 400 );
+		throw new \Exception( 'No supported formats', 400 );
 	}
 }

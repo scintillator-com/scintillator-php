@@ -6,7 +6,7 @@
 final class Snippet_Formatter_JS_JQuery extends Snippet_Formatter{
 	public function format( &$moment ){
 		try{
-			$writer = new MemoryWriter();
+			$writer = new \MemoryWriter();
 			if( $this->snippet->config->method === 'async' ){
 				$writer->writeLine( 'async function(){' )->indent();
 			}
@@ -23,7 +23,7 @@ final class Snippet_Formatter_JS_JQuery extends Snippet_Formatter{
 
 			$body = null;
 			if( !empty( $this->snippet->config->body_params ) )
-				throw new Exception( 'Not implemented: body_params' );
+				throw new \Exception( 'Not implemented: body_params' );
 
 
 			$url = $this->getURL( $moment );
@@ -87,7 +87,7 @@ final class Snippet_Formatter_JS_JQuery extends Snippet_Formatter{
 					->writeLine( "})" );
 			}
 			else{
-				throw new Exception( "Not Implemented: method='{$this->snippet->config->method}'" );
+				throw new \Exception( "Not Implemented: method='{$this->snippet->config->method}'" );
 			}
 
 		return "{$writer}";

@@ -13,7 +13,7 @@ class Validator{
 	public static function validate( $data, $required, $optional, $ns = '' ){
 		self::$depth++;
 
-		$validator = new Validator( $required, $optional );
+		$validator = new \Validator( $required, $optional );
 		$validator->_validateAny( $data );
 		$validator->_validateExclusive( $data );
 
@@ -53,7 +53,7 @@ class Validator{
 			}
 
 			$value = $data[ $param ];
-			$format = Format::get( $attributes );
+			$format = \Format::get( $attributes );
 			if( is_numeric_array( $value ) ){
 				if( in_array( 'scalar', $attributes, true ) )
 					throw new \Exception( "The '{$param}' parameter must be scalar.", 422 );

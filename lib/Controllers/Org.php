@@ -38,7 +38,7 @@ final class Org extends \Route {
 
 
 		$org = new \Models\Org( $data );
-		$org->client_key = Configuration::load()->generateClientKey();
+		$org->client_key = \Configuration::load()->generateClientKey();
 		$org->created    = $org->modified = new \MongoDB\BSON\UTCDateTime();
 		$org->created_by = $user->getID();
 		$org->admins     = array( $this->session->user_id );
@@ -116,7 +116,7 @@ final class Org extends \Route {
 		}
 		catch( \Exception $ex ){
 			\Log::error( "{$ex}" );
-			throw new Exception( 'Internal Server Error', 500, $ex );
+			throw new \Exception( 'Internal Server Error', 500, $ex );
 		}
 
 		if( self::insertedOne( $rlResult ) ){

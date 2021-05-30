@@ -85,7 +85,7 @@ final class Request{
 	}
 
 	public static function Load(){
-		$request = new Request();
+		$request = new \Request();
 
 		$basePath = rtrim( $_SERVER[ 'DOCUMENT_ROOT' ], '/' );
 		$rebaseAt = strpos( $_SERVER[ 'SCRIPT_FILENAME' ], $basePath );

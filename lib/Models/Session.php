@@ -112,7 +112,7 @@ class Session extends MongoModel{
 		$data = (array)$this;
 		$remainder = \Validator::validate( $data, $required, $optional );
 		if( !$this->isValidDuration() )
-			throw new Exception( 'Session Invalid', 401 );
+			throw new \Exception( 'Session Invalid', 401 );
 
 		return $this;
 	}

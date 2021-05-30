@@ -47,6 +47,6 @@ final class Enum extends Format{
 		}
 
 		$combined = implode( ", ", $tmp );
-		throw new IntelePeer_Exception( "The '{$param}' parameter must match one of the following values: {$combined}", 422 );
+		throw new \Exception( "The '{$param}' parameter must match one of the following values: {$combined}", 422 );
 	}
 }

@@ -23,7 +23,7 @@ abstract class SnippetFormatter{
 				throw new \Exception( "Formatter not implemented: '{$snippet->generator->language}'", 501 );
 		}
 		
-		//$formatter = new SnippetFormatter( $snippet );
+		//$formatter = new \SnippetFormatter( $snippet );
 		return $formatter;
 	}
 	

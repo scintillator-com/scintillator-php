@@ -8,16 +8,17 @@ class Generator extends \Route{
 
 	public final function __construct( \Request $request ){
 		parent::__construct( $request );
-
 		$this->setHandler( 'GET', array( $this, 'GET' ), array( 'Accept', 'Authorization', 'Content-Type' ) );
 	}
 
+	/**
+	 * NOTE: `protected` handlers can only be used by their own controllers
+	 *   Use `public` to allow CustomController
+	 **/
 	protected final function GET(){
 		$this->json()->authorize();
 
-		$this->required = array(
-		
-		);
+		$this->required = array();
 		
 		$this->optional = array(
 			'language' => array( 'format' => 'string' ),
@@ -64,7 +65,7 @@ class Generator extends \Route{
 
 
 					default:
-						Log::warning( "Unsupported parameter: {$key}" );
+						\Log::warning( "Unsupported parameter: {$key}" );
 						break;
 				}
 			}

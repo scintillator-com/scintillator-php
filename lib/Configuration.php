@@ -10,7 +10,7 @@ final class Configuration{
 		foreach( self::$required as $param ){
 			if( empty( $_ENV[ $param ] ) ){
 				\Log::error( "Missing application (ENV) configuration parameter: '{$param}'" );
-				throw new Exception( 'Application not configured', 500 );
+				throw new \Exception( 'Application not configured', 500 );
 			}
 		}
 		
@@ -51,7 +51,7 @@ final class Configuration{
 			return $default;
 		}
 		else{
-			throw new Exception( "Undefined configuration attibute: {$key}" );
+			throw new \Exception( "Undefined configuration attibute: {$key}" );
 		}
 	}
 
@@ -61,7 +61,7 @@ final class Configuration{
 			return $config;
 
 
-		$config = new Configuration();
+		$config = new \Configuration();
 		//$start = hrtime( true );
 
 		/*

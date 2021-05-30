@@ -23,6 +23,6 @@ final class CustomFormat extends Format{
 	}
 
 	public function throwValidationError( $param, $value ){
-		throw new Exception( "The '{$param}' parameter must be valid", 422 );
+		throw new \Exception( "The '{$param}' parameter must be valid", 422 );
 	}
 }

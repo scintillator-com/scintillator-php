@@ -64,7 +64,7 @@ class Format{
 
 		$name = $attributes[ "format" ];
 		if( $name === 'object' ){
-			$obj = new ObjectFormat();
+			$obj = new \ObjectFormat();
 			return $obj->configure( $attributes );
 		}
 		else if( isset( self::$formats[ $name ] ) ){
@@ -78,7 +78,7 @@ class Format{
 	private static function load(){
 		//TODO: https://www.php.net/manual/en/function.filter-var.php
 		
-		self::$formats[ 'alphanumeric' ] = new Format( 'alphanumeric' );
+		self::$formats[ 'alphanumeric' ] = new \Format( 'alphanumeric' );
 		self::$formats[ 'alphanumeric' ]->format = function( $self, $val ){
 			return preg_replace( '/[[:^alnum:]]/', '', $val );
 		};
@@ -86,7 +86,7 @@ class Format{
 			return ctype_alnum( $val );
 		};
 
-		self::$formats[ 'array' ] = new Format( 'array' );
+		self::$formats[ 'array' ] = new \Format( 'array' );
 		self::$formats[ 'array' ]->format = function( $self, $val ){
 			return (array)$val;
 		};
@@ -95,7 +95,7 @@ class Format{
 		};
 
 
-		self::$formats[ 'base64' ] = new Format( 'base64' );
+		self::$formats[ 'base64' ] = new \Format( 'base64' );
 		self::$formats[ 'base64' ]->format = function( $self, $val ){
 			return "{$val}";
 		};
@@ -105,7 +105,7 @@ class Format{
 
 
 
-		self::$formats[ 'boolean' ] = new Format( 'boolean' );
+		self::$formats[ 'boolean' ] = new \Format( 'boolean' );
 		self::$formats[ 'boolean' ]->format = function( $self, $val ){
 			if( is_bool( $val ) )
 				return $val;
@@ -116,14 +116,14 @@ class Format{
 			return $val === "true" || $val === "false" || is_bool( $val );
 		};
 
-		self::$formats[ 'custom' ] = new CustomFormat();
+		self::$formats[ 'custom' ] = new \CustomFormat();
 
-		//self::$formats[ 'email' ] = new Email();
+		//self::$formats[ 'email' ] = new \Email();
 
-		self::$formats[ 'enum' ] = new Enum();
+		self::$formats[ 'enum' ] = new \Enum();
 
 
-		self::$formats[ 'hex' ] = new Format( 'hexadecimal' );
+		self::$formats[ 'hex' ] = new \Format( 'hexadecimal' );
 		self::$formats[ 'hex' ]->format = function( $self, $val ){
 			return "{$val}";
 		};
@@ -131,7 +131,7 @@ class Format{
 			return ctype_xdigit( $val );
 		};
 
-		self::$formats[ 'integer' ] = new Format( 'integer' );
+		self::$formats[ 'integer' ] = new \Format( 'integer' );
 		self::$formats[ 'integer' ]->format = function( $self, $val ){
 			return (int)$val;
 		};
@@ -146,9 +146,9 @@ class Format{
 			return $res;
 		};
 
-		self::$formats[ 'iso8601' ] = new ISO8601();
+		self::$formats[ 'iso8601' ] = new \ISO8601();
 
-		self::$formats[ 'numeric' ] = new Format( 'numeric' );
+		self::$formats[ 'numeric' ] = new \Format( 'numeric' );
 		self::$formats[ 'numeric' ]->format = function( $self, $val ){
 			return preg_replace( '/\D/', '', "{$val}" );
 		};
@@ -156,9 +156,9 @@ class Format{
 			return is_numeric( $val ); //ctype_digit( "{$val}" );
 		};
 
-		self::$formats[ 'object' ] = new ObjectFormat();
+		self::$formats[ 'object' ] = new \ObjectFormat();
 
-		self::$formats[ 'string' ] = new Format( 'string' );
+		self::$formats[ 'string' ] = new \Format( 'string' );
 		self::$formats[ 'string' ]->format = function( $self, $val ){
 			return trim( preg_replace( "/\s+/", " ", "{$val}" ) );
 		};
@@ -173,7 +173,7 @@ class Format{
 			return strlen( $tmp ) > 0;
 		};
 
-		self::$formats[ 'url' ] = new Format( 'string' );
+		self::$formats[ 'url' ] = new \Format( 'string' );
 		self::$formats[ 'url' ]->format = function( $self, $val ){
 			return "{$val}";
 		};
@@ -185,7 +185,7 @@ class Format{
 
 
 
-		self::$formats[ 'MongoDB::ObjectId' ] = new Format( 'MongoDB::ObjectId' );
+		self::$formats[ 'MongoDB::ObjectId' ] = new \Format( 'MongoDB::ObjectId' );
 		self::$formats[ 'MongoDB::ObjectId' ]->format = function( $self, $val ){
 			if( $val instanceof MongoDB\BSON\ObjectId )
 				return $val;
@@ -207,7 +207,7 @@ class Format{
 			}
 		};
 
-		self::$formats[ 'MongoDB::UTCDateTime' ] = new Format( 'MongoDB::UTCDateTime' );
+		self::$formats[ 'MongoDB::UTCDateTime' ] = new \Format( 'MongoDB::UTCDateTime' );
 		self::$formats[ 'MongoDB::UTCDateTime' ]->format = function( $self, $val ){
 			if( $val instanceof MongoDB\BSON\UTCDateTime )
 				return $val;

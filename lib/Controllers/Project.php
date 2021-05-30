@@ -61,7 +61,7 @@ final class Project extends \Route {
 						break;
 
 					default:
-						Log::warning( "Unsupported parameter: {$key}" );
+						\Log::warning( "Unsupported parameter: {$key}" );
 						break;
 				}
 			}
