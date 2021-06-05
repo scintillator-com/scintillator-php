@@ -262,25 +262,25 @@ final class Response{
 				case 'text/html':
 				case 'application/xhtml+xml':
 					$this->_contentType = 'text/html';
-					$this->formatter = new \Formatter_Text();
+					$this->formatter = new \Formatters\Text();
 					return;
 
 				case 'json':
 				case 'application/json':
 					$this->_contentType = 'application/json';
-					$this->formatter = new \Formatter_JSON();
+					$this->formatter = new \Formatters\JSON();
 					return;
 
 				case 'text':
 				case 'text/plain':
 					$this->_contentType = 'text/plain';
-					$this->formatter = new \Formatter_Text();
+					$this->formatter = new \Formatters\Text();
 					return;
 
 				case '*/*':
 				default:
 					$this->_contentType = 'text/plain';
-					$this->formatter = new \Formatter_Text();
+					$this->formatter = new \Formatters\Text();
 					return;
 			}
 		}

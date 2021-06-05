@@ -1,6 +1,8 @@
 <?php
 
-class Formatter_Empty extends Formatter{
+namespace Formatters;
+
+class _Empty extends \Formatter{
 	public final function emit( &$data, $code=null ){
 		$contentHeaders = $this->getHeaders( $content );
 		foreach( $contentHeaders as $k => $v ){

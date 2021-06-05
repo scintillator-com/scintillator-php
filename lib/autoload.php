@@ -7,6 +7,8 @@ function __autoload_service( $class ){
 		return true;
 	}
 	else{
+		//error_log( $class );
+		//error_log( $path );
 		return false;
 	}
 }
@@ -14,16 +16,16 @@ function __autoload_service( $class ){
 function class_to_path( $class ){
 	static $find, $replace;
 	if( empty( $replace ) ){
-		$find = array( '/_([_]*)?/', '/\\\\/' );
+		//$find = array( '/_([_]*)?/', '/\\\\/' );
+		$find = array( '/\\\\/' );
 		$replace = DS === '\\' ? '\\\$1' : '/$1';
 	}
 
 	$path = preg_replace( $find, $replace, $class );
-	if( $path && $path[0] == DS ){
-		$path[0] = '_';
-	}
-
-	return "{$path}.php";
+	if( $path )
+		return "{$path}.php";
+	else
+		return false;
 }
 
 spl_autoload_register( '__autoload_service' );

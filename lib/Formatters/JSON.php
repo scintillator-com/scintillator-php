@@ -1,5 +1,8 @@
 <?php
-final class Formatter_Text extends Formatter{
+
+namespace Formatters;
+
+final class JSON extends \Formatter{
 	//From base:
 	//  $this->_cache
 
@@ -28,31 +31,34 @@ final class Formatter_Text extends Formatter{
 	}
 
 	public final function getChunksFooter(){
-		return '';
+		return "]";
 	}
 
 	public final function getChunksHeader(){
-		return '';
+		return "[";
 	}
 
 	public final function getChunksSeparator(){
-		return '';
+		return ",";
 	}
-
 
 	public final function getHeaders( &$content, $isCached=true ){
 		$formatted = $this->format( $content, $isCached );
 
-		$contentHeaders[] = 'Content-Type: text/plain';
+		$contentHeaders[] = 'Content-Type: application/json';
 		$contentHeaders[] = 'Content-Length: '. strlen( $formatted );
 		return $contentHeaders;
 	}
 
 	private static final function _formatData( &$content ){
-		return "{$content}";
+		$config = \Configuration::Load();
+		if( !empty( $config->isDeveloper ) )
+			return json_encode( $content, JSON_PRETTY_PRINT );
+		else
+			return json_encode( $content );
 	}
 
 	private static final function _formatException( Exception &$exception ){
-		return $exception->getCode() .': '. $exception->getMessage();
+		return json_encode( array( 'code' => $exception->getCode(), 'message' => $exception->getMessage() ) );
 	}
 }

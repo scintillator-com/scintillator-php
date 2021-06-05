@@ -48,10 +48,10 @@ final class Application{
 	public final function routeRequest(){
 		$pieces = explode( '/', trim( $this->request->path, '/' ) );
 		while( $pieces ){
-			
 			switch( $this->mode ){
 				case 'db':
 					throw new \Exception( "Not Implemented: Application::\$mode = 'db'" );
+
 				case 'files':
 					$abs_path = $this->libPath . DS . implode( DS, $pieces ) .'.php';
 					if( file_exists( $path ) ){
@@ -65,7 +65,8 @@ final class Application{
 					$rel_path = '/'. implode( '/', $pieces );
 					if( !empty( $this->controllers[ $rel_path ] ) ){
 						\Log::debug( "Application->\$mode 'map'" );
-						$this->route = new $this->controllers[ $rel_path ]( $this->request );
+						$controller = $this->controllers[ $rel_path ];
+						$this->route = new $controller( $this->request, $controller );
 						return $this;
 					}
 					break;

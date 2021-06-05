@@ -29,7 +29,7 @@ class Route{
 		//which method is it asking for?
 		//Access-Control-Request-Method: POST
 		
-		$this->response->formatter = new \Formatter_Empty();
+		$this->response->formatter = new \Formatters\_Empty();
 		$this->response->emit( null, 204 );
 	}
 
@@ -88,6 +88,18 @@ class Route{
 		}
 		else
 			throw new \Exception( "The '{$method}' method already has a registered handler" );
+	}
+
+	public final static function custom( $handlers ){
+		$route = new Route( $request );
+		foreach( $handlers as $method => $classMethod  ){
+			$cb = function(){
+				$reflectionMethod = new ReflectionMethod( $classMethod );
+				return $reflectionMethod->invoke( $route );
+			};
+
+			$route->setHandler( $method, $cb,  );
+		}
 	}
 
 	protected final function dump(){

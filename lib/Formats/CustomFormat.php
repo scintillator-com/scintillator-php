@@ -1,5 +1,8 @@
 <?php
-final class CustomFormat extends Format{
+
+namespace Formats;
+
+final class CustomFormat extends \Format{
 	public $formatter = null;
 	public $validator = null;
 	public $options = array();

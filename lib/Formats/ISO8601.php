@@ -1,5 +1,8 @@
 <?php
-final class ISO8601 extends Format{
+
+namespace Formats;
+
+final class ISO8601 extends \Format{
 	public function __construct(){
 		parent::__construct( 'number array' );
 	}

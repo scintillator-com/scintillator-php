@@ -4,7 +4,6 @@ namespace Controllers;
 
 class Generator extends \Route{
 	use \Traits\Authorized;
-	use \Traits\Mongo;
 
 	public final function __construct( \Request $request ){
 		parent::__construct( $request );
@@ -15,7 +14,7 @@ class Generator extends \Route{
 	 * NOTE: `protected` handlers can only be used by their own controllers
 	 *   Use `public` to allow CustomController
 	 **/
-	protected final function GET(){
+	public final function GET(){
 		$this->json()->authorize();
 
 		$this->required = array();

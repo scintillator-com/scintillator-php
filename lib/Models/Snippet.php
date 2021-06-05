@@ -10,7 +10,7 @@ class Snippet extends MongoModel{
 
 	public $config;
 	public $created;
-	public $formatter;
+	public $generator;
 	public $modified;
 	public $moment_id;
 	public $views = 0;
@@ -47,7 +47,7 @@ class Snippet extends MongoModel{
 						"query_params"  => array( 'format' => 'string', 'default' => array(), 'array' )
 					)
 				)),
-				'formatter' => array( 'format' => 'object', 'object' => (object)array(
+				'generator' => array( 'format' => 'object', 'object' => (object)array(
 					'required' => array(
 						"name"     => array( 'format' => 'string', 'scalar' ),
 						"language" => array( 'format' => 'string', 'scalar' ),

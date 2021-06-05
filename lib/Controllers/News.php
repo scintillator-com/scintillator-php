@@ -4,7 +4,6 @@ namespace Controllers;
 
 class News extends \Route{
 	use \Traits\Authorized;
-	use \Traits\Mongo;
 
 	public final function __construct( Request $request ){
 		parent::__construct( $request );

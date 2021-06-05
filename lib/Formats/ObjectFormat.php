@@ -1,6 +1,8 @@
 <?php
 
-class ObjectFormat extends Format{
+namespace Formats;
+
+class ObjectFormat extends \Format{
 	public $optional  = array();
 	public $required  = array();
 

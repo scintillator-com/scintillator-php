@@ -1,5 +1,8 @@
 <?php
-final class Enum extends Format{
+
+namespace Formats;
+
+final class Enum extends \Format{
 	public $converted = false;
 	public $options = array();
 

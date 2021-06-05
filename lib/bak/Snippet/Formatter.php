@@ -8,17 +8,17 @@ abstract class Snippet_Formatter{
 	}
 	
 	public static function create( &$snippet ){
-		if( $snippet->formatter->language === 'javascript' && $snippet->formatter->library === 'axios' ){
+		if( $snippet->generator->language === 'javascript' && $snippet->generator->library === 'axios' ){
 			return new \Snippet_Formatter_JS_Axios( $snippet );
 		}
-		else if( $snippet->formatter->language === 'javascript' && $snippet->formatter->library === 'fetch' ){
+		else if( $snippet->generator->language === 'javascript' && $snippet->generator->library === 'fetch' ){
 			return new \Snippet_Formatter_JS_Fetch( $snippet );
 		}
-		else if( $snippet->formatter->language === 'javascript' && $snippet->formatter->library === 'jquery' ){
+		else if( $snippet->generator->language === 'javascript' && $snippet->generator->library === 'jquery' ){
 			return new \Snippet_Formatter_JS_JQuery( $snippet );
 		}
 		else{
-			throw new \Exception( "Not Implemented: {$snippet->formatter->language}-{$snippet->formatter->library}" );
+			throw new \Exception( "Not Implemented: {$snippet->generator->language}-{$snippet->generator->library}" );
 		}
 	}
 

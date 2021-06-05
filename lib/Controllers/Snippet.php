@@ -27,7 +27,7 @@ final class Snippet extends \Route {
 					'query_params'  => array( 'format' => 'string', 'default' => array(), 'array' )
 				)
 			)),
-			'formatter' => array( 'format' => 'object', 'object' => (object)array(
+			'generator' => array( 'format' => 'object', 'object' => (object)array(
 				'required' => array(
 					'name'     => array( 'format' => 'string', 'scalar' ),
 					'language' => array( 'format' => 'string', 'scalar' ),
@@ -64,7 +64,7 @@ final class Snippet extends \Route {
 					'query_params'  => array( 'format' => 'string', 'default' => array(), 'array' )
 				)
 			)),
-			'formatter' => array( 'format' => 'object', 'object' => (object)array(
+			'generator' => array( 'format' => 'object', 'object' => (object)array(
 				'required' => array(
 					'name'     => array( 'format' => 'string', 'scalar' ),
 					'language' => array( 'format' => 'string', 'scalar' ),
@@ -79,7 +79,6 @@ final class Snippet extends \Route {
 
 		$snippet = new \Models\Snippet( $data );
 		$snippet->validate();
-\Log::info( 'validated' );
 
 		$query = array(
 			'_id' => $data['snippet_id' ]
@@ -89,7 +88,7 @@ final class Snippet extends \Route {
 			'$set'         => array(
 				'moment_id' => $snippet->moment_id,
 				'config'    => $snippet->config,
-				'formatter' => $snippet->formatter
+				'generator' => $snippet->generator
 			),
 			'$currentDate' => array(
 				'modified' => true

@@ -64,7 +64,7 @@ class Format{
 
 		$name = $attributes[ "format" ];
 		if( $name === 'object' ){
-			$obj = new \ObjectFormat();
+			$obj = new \Formats\ObjectFormat();
 			return $obj->configure( $attributes );
 		}
 		else if( isset( self::$formats[ $name ] ) ){
@@ -116,11 +116,11 @@ class Format{
 			return $val === "true" || $val === "false" || is_bool( $val );
 		};
 
-		self::$formats[ 'custom' ] = new \CustomFormat();
+		self::$formats[ 'custom' ] = new \Formats\CustomFormat();
 
 		//self::$formats[ 'email' ] = new \Email();
 
-		self::$formats[ 'enum' ] = new \Enum();
+		self::$formats[ 'enum' ] = new \Formats\Enum();
 
 
 		self::$formats[ 'hex' ] = new \Format( 'hexadecimal' );
@@ -146,7 +146,7 @@ class Format{
 			return $res;
 		};
 
-		self::$formats[ 'iso8601' ] = new \ISO8601();
+		self::$formats[ 'iso8601' ] = new \Formats\ISO8601();
 
 		self::$formats[ 'numeric' ] = new \Format( 'numeric' );
 		self::$formats[ 'numeric' ]->format = function( $self, $val ){
@@ -156,7 +156,7 @@ class Format{
 			return is_numeric( $val ); //ctype_digit( "{$val}" );
 		};
 
-		self::$formats[ 'object' ] = new \ObjectFormat();
+		self::$formats[ 'object' ] = new \Formats\ObjectFormat();
 
 		self::$formats[ 'string' ] = new \Format( 'string' );
 		self::$formats[ 'string' ]->format = function( $self, $val ){
