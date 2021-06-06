@@ -23,21 +23,25 @@ final class Moment extends \Route {
 
 
 		$this->required = array(
-			'id' => array( 'format' => 'string' ),
+			'id' => array( 'format' => 'MongoDB::ObjectId' ),
 		);
 		$_GET['id'] = $this->request->urlArgs[0];
 		$data = $this->validate( $_GET );
-		$query[ '_id' ] = new \MongoDB\BSON\ObjectId( $data['id'] );
+		$query[ '_id' ] = $data['id']; //new \MongoDB\BSON\ObjectId( $data['id'] );
 
 		//if( !empty( $moment->is_locked ) )
 		//	throw new \Exception( "The record cannot be deleted while it is locked" )
 
 		$momentRes = $this->selectCollection( 'moments' )->deleteOne( $query );
 		if( !self::deletedOne( $momentRes ) ){
-			\Log::warning( $momentRes );
+			//$this->response->dump( $momentRes );
 		}
 
-		$this->response->print( '', 204 );
+
+		//$this->response->dump( $query );
+		//exit;
+		
+		$this->empty()->response->print( null, 204 );
 	}
 
 	public final function GET(){

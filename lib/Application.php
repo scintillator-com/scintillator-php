@@ -76,7 +76,8 @@ final class Application{
 			array_unshift( $this->request->urlArgs, $piece );
 		}
 
-		\Response::Create404()->emit();
+		$response = new \Response();
+		$response->emit( 'Not Found', 404 );
 		exit;
 	}
 	

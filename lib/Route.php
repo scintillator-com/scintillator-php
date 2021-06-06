@@ -102,14 +102,13 @@ class Route{
 		}
 	}
 
-	protected final function dump(){
-		$this->text();
-		call_user_func_array( 'dump', func_get_args() );
+	protected final function empty(){
+		$this->response->formatter = new \Formatters\_Empty();
+		return $this;
 	}
 
 	protected final function html(){
-		if( $this->request->method === 'GET' || 
-			$this->request->method === 'OPTIONS' ){
+		if( in_array( $this->request->method, array( 'DELETE', 'GET', 'OPTIONS' ), true ) ){
 			$this->response->setContentType( 'html' );
 			return $this;
 		}
@@ -128,8 +127,7 @@ class Route{
 	}
 
 	protected final function json(){
-		if( $this->request->method === 'GET' ||
-			$this->request->method === 'OPTIONS' ){
+		if( in_array( $this->request->method, array( 'DELETE', 'GET', 'OPTIONS' ), true ) ){
 			$this->response->setContentType( 'json' );
 			return $this;
 		}
@@ -153,8 +151,7 @@ class Route{
 	}
 
 	protected final function text(){
-		if( $this->request->method === 'GET' ||
-			$this->request->method === 'OPTIONS' ){
+		if( in_array( $this->request->method, array( 'DELETE', 'GET', 'OPTIONS' ), true ) ){
 			$this->response->setContentType( 'text' );
 			return $this;
 		}

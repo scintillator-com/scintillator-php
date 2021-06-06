@@ -51,25 +51,29 @@ final class Response{
 
 	//TODO: chunked...
 	public final function dump( $content ){
-		//emit regular content
-		try{
-			ob_start();
-			dump( $content );
-			$buffer = ob_get_clean();
+		static $first = true;
 
-			$this->setContentType( 'text' );
-			$contentHeaders = $this->formatter->getHeaders( $buffer );
-			$this->_emitHeaders( $contentHeaders, 200 );
-			$this->_emitContent( $buffer );
+		try{
+			$buffer = call_user_func_array( 'dump', func_get_args() );
+
+			if( $first ){
+				$first = false;
+
+				//force
+				$this->_contentType = 'text/plain';
+				$this->formatter = new \Formatters\Text();
+				$this->print( $buffer, 200, true );
+			}
+			else{
+				$this->print( $buffer, 200, false );
+			}
 		}
 		catch( Exception $ex ){
 			//TODO: clone?  track old response?
-			\Log::error( "Exception during dump( content ): {$ex}" );
+			\Log::error( "Exception during dump( {$content} ): {$ex}" );
 			$this->formatter->clearCache();
 			$this->emitException( $ex );
 		}
-
-		exit;
 	}
 
 	public final function end(){
@@ -103,7 +107,7 @@ final class Response{
 			\Log::error( "Non-HTTP exception: {$ex}" );
 
 			$code = 500;
-			$ex = new \Exception( 'Internal Server Error', 500, $ex );
+			$ex = new \Exception( 'Internal Server Error', $code, $ex );
 		}
 
 		//emit error from formatting

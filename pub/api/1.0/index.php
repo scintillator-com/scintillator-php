@@ -8,7 +8,7 @@ require_once( LIB . DIRECTORY_SEPARATOR .'config.php' );
 $app = new Application( __DIR__ . DS .'lib', $start );
 if( $app->loadRequest() ){
 	$app->mode = 'map';
-	$app->controllers = array(
+	$app->controllers = new RouteMap(array(
 		'/generators' => '\Controllers\Generator',
 		'/history' => '\Controllers\History',
 		'/login'   => '\Controllers\Login',
@@ -18,7 +18,11 @@ if( $app->loadRequest() ){
 		'/project' => '\Controllers\Project',
 		'/snippet' => '\Controllers\Snippet',
 		'/user'    => '\Controllers\User'
-	);
+	));
+
+	//$momentContaoller = new RegexString( '/^\/moment\/(?P<id>[0-9A-Fa-f]+)\/body/' );
+	//$app->controllers[ $momentContaoller ] = '\Controllers\Moment';
+
 	$app->routeRequest()->processRoute();
 }
 exit;

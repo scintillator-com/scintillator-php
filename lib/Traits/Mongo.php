@@ -6,7 +6,7 @@ trait Mongo{
 	private $db;
 	private $dbName;
 
-	protected static final function deletedOne( \MongoDB\UpdateResult $result ){
+	protected static final function deletedOne( \MongoDB\DeleteResult $result ){
 		return $result->isAcknowledged() && $result->getDeletedCount() === 1;
 	}
 
