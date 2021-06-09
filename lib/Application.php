@@ -63,9 +63,17 @@ final class Application{
 
 				case 'map':
 					$rel_path = '/'. implode( '/', $pieces );
-					if( !empty( $this->controllers[ $rel_path ] ) ){
+					if( $this->controllers->tryGet( $rel_path, $controller, $key ) ){
 						\Log::debug( "Application->\$mode 'map'" );
-						$controller = $this->controllers[ $rel_path ];
+						if( $key instanceof \RegexString && $key->test( $rel_path, $matches ) ){
+							foreach( $matches as $k => $v ){
+								if( !is_int( $k ) ){
+									$this->request->urlArgs[] = $v;
+									$this->request->namedArgs[ $k ] = $v;
+								}
+							}
+						}
+
 						$this->route = new $controller( $this->request, $controller );
 						return $this;
 					}

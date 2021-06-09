@@ -7,7 +7,7 @@ class RegexString{
 		$this->pattern = $pattern;
 	}
 
-	public function test( $text ){
+	public function test( $text, &$matches=null ){
 		return preg_match( $this->pattern, $text, $matches ) > 0;
 	}
 

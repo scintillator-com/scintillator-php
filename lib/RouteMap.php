@@ -5,56 +5,57 @@ class RouteMap extends SplObjectStorage{
 
 	public function __construct( iterable $map=null ){
 		if( $map ){
-			foreach( $map as $k => $v ){
-				$this->offsetSet( $k, $v );
+			foreach( $map as $key => $value ){
+				$this->offsetSet( $key, $value );
 			}
 		}
 	}
 
-	public function contains( $key ){
-		return $this->tryGet( $key );
+	public function contains( $search ){
+		return $this->tryGet( $search );
 	}
 
-	public function offsetExists( $key ){
-		return $this->tryGet( $key );
+	public function offsetExists( $search ){
+		return $this->tryGet( $search );
 	}
 
-	public function offsetGet( $key ){
-		if( $this->tryGet( $key, $value ) )
+	public function offsetGet( $search ){
+		if( $this->tryGet( $search, $value ) )
 			return $value;
 	}
 
-	public function offsetSet( $key, $value=null ){
-		if( is_scalar( $key ) ){
-			$this->strings[ $key ] = $value;
+	public function offsetSet( $search, $value=null ){
+		if( is_scalar( $search ) ){
+			$this->strings[ $search ] = $value;
 		}
-		else if( is_object( $key ) ){
-			parent::offsetSet( $key, $value );
-		}
-		else{
-			\Log::info( __METHOD__ );
-			throw new \Exception( "Unsupported key type: ". gettype( $key ) );
-		}
-	}
-
-	public function offsetUnset( $key ){
-		if( is_scalar( $key ) ){
-			unset( $this->strings[ $key ] );
-		}
-		else if( is_object( $key ) ){
-			parent::offsetUnset( $key );
+		else if( is_object( $search ) ){
+			parent::offsetSet( $search, $value );
 		}
 		else{
 			\Log::info( __METHOD__ );
-			throw new \Exception( "Unsupported key type: ". gettype( $key ) );
+			throw new \Exception( "Unsupported search type: ". gettype( $search ) );
 		}
 	}
 
-	public function tryGet( $key, &$value=null ){
+	public function offsetUnset( $search ){
+		if( is_scalar( $search ) ){
+			unset( $this->strings[ $search ] );
+		}
+		else if( is_object( $search ) ){
+			parent::offsetUnset( $search );
+		}
+		else{
+			\Log::info( __METHOD__ );
+			throw new \Exception( "Unsupported search type: ". gettype( $search ) );
+		}
+	}
+
+	public function tryGet( $search, &$value=null, &$key=null ){
 		//check strings
-		if( is_scalar( $key ) ){
-			if( array_key_exists( $key, $this->strings ) ){
-				$value = $this->strings[ $key ];
+		if( is_scalar( $search ) ){
+			if( array_key_exists( $search, $this->strings ) ){
+				$key = $search;
+				$value = $this->strings[ $search ];
 				return true;
 			}
 		}
@@ -62,7 +63,8 @@ class RouteMap extends SplObjectStorage{
 		//now iterate the non-strings
 		$this->rewind();
 		while( $this->valid() ){
-			if( $this->current()->test( $key ) ){
+			if( $this->current()->test( $search ) ){
+				$key = $this->current();
 				$value = $this->getInfo();
 				return true;
 			}

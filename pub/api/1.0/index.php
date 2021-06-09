@@ -20,8 +20,8 @@ if( $app->loadRequest() ){
 		'/user'    => '\Controllers\User'
 	));
 
-	//$momentContaoller = new RegexString( '/^\/moment\/(?P<id>[0-9A-Fa-f]+)\/body/' );
-	//$app->controllers[ $momentContaoller ] = '\Controllers\Moment';
+	$momentController = new RegexString( '/^\/moment\/(?P<id>[0-9A-Fa-f]+)\/(?P<section>(request|response))/' );
+	$app->controllers[ $momentController ] = '\Controllers\Moment';
 
 	$app->routeRequest()->processRoute();
 }
