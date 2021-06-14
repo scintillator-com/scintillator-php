@@ -1,16 +1,17 @@
 <?php
-require( '../lib/config.php' );
+require( dirname( __DIR__ ) .'/lib/config.php' );
 
-$source = 'mongodb://192.168.1.31:27017/scintillator';
-$dest = 'mongodb://192.168.1.31:27017/trash';
-#$dest = 'mongodb+srv://scintillator_demo:ZJPvHi7UQ1Hb3gtC@cluster0.kvmcv.mongodb.net/scintillator?authSource=admin&replicaSet=atlas-10ao69-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true';
+array_shift( $argv );
 
-
+$source = array_shift( $argv );
 $client_src = new \MongoDB\Client( $source );
 $db_src = $client_src->selectDatabase( 'scintillator' );
 
+
+$dest = array_shift( $argv );
 $client_dest = new \MongoDB\Client( $dest );
 $db_dest = $client_dest->selectDatabase( 'trash' );
+
 
 $ts = date( 'Y-m-d_His' );
 $path = __DIR__ . DS .'backups';

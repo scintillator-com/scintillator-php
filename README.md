@@ -22,7 +22,29 @@ sudo chmod 0755 /usr/local/bin/php-composer.sh
 sudo apt install php-mongodb
 php-composer.sh install
 
-#Docker build
+
+# TODO:
+
+get updated index.php
+convert request content-type checking to a hook
+convert request accept checking to a hook
+convert auth checking to a hook
+
+GET history
+ - between
+
+GET interfaces
+ - method
+ - domain & path | URL
+ - status (optional)
+
+composer archive --dir=tmp --file=scintillator-php-0.2.5
+
+
+
+# Docker build
+
+TBD
 
 
 # APIs
