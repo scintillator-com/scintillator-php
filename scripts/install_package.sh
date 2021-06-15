@@ -49,13 +49,14 @@ for src in $dirs; do
     rsync -chmr --del "${TMP_PATH}/${src}/api/" "${TARGET_PATH}/${dest}/api/"
 
     echo "Updating ${TARGET_PATH}/${dest}/"
-    rsync -chm "${TMP_PATH}/${src}/*" "${TARGET_PATH}/${dest}/"
+    rsync -chv "${TMP_PATH}/${src}/*" "${TARGET_PATH}/${dest}/"
   else
     dest="${src}"
 
     # -c: checksum
     # -h: human readable numbers
     # -m: prune empty directories
+    # -n: dry-run
     # -r: recursive
     # -v: verbose
     # -z: compress
