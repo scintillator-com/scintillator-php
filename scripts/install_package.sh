@@ -32,7 +32,7 @@ mkdir -p "${TMP_PATH}"
 tar -zxf "${PACKAGE_PATH}" -C "${TMP_PATH}"
 rm "${PACKAGE_PATH}"
 
-#unlock the target path
+echo "Unlocking ${TARGET_PATH}"
 user=$(id -un)
 sudo chown -R "${user}" "${TARGET_PATH}"
 
@@ -46,10 +46,10 @@ for src in $dirs; do
     fi
 
     echo "Updating ${TARGET_PATH}/${dest}/api/"
-    rsync -chmrz --del "${TMP_PATH}/${src}/api/" "${TARGET_PATH}/${dest}/api/"
+    rsync -chmr --del "${TMP_PATH}/${src}/api/" "${TARGET_PATH}/${dest}/api/"
 
     echo "Updating ${TARGET_PATH}/${dest}/"
-    rsync -chmz "${TMP_PATH}/${src}/*" "${TARGET_PATH}/${dest}/"
+    rsync -chm "${TMP_PATH}/${src}/*" "${TARGET_PATH}/${dest}/"
   else
     dest="${src}"
 
@@ -61,7 +61,7 @@ for src in $dirs; do
     # -z: compress
 
     echo "Updating ${TARGET_PATH}/${dest}/"
-    rsync -chmrz --del "${TMP_PATH}/${src}/" "${TARGET_PATH}/${dest}/"
+    rsync -chmr --del "${TMP_PATH}/${src}/" "${TARGET_PATH}/${dest}/"
   fi
 
 done
