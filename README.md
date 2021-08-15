@@ -51,22 +51,22 @@ TBD
 
 ## APIs
 
-| Verb  | Path                                        | Description                                                          | Request     | Return      |
-|-------|---------------------------------------------|----------------------------------------------------------------------|-------------|-------------|
-|POST   |/api/1.0/login                               |List/search `File`s (and branches)                                    | AuthRequest | SessionInfo |
-|POST   |/api/1.0/user                                |Create user                                                           | UserRequest |             |
-|POST   |/api/1.0/org                                 |After user verification, create your organization                     |             |             |
-|-----  |-----                                        |-----                                                                 |-----        |-----        |
-|GET    |/api/1.0/generators                          |                                                                      |             |             |
-|GET    |/api/1.0/history                             |                                                                      |             |             |
-|GET    |/api/1.0/moment                              |                                                                      |             |             |
-|PATCH  |/api/1.0/moment                              |                                                                      |             |             |
-|DELETE |/api/1.0/moment                              |                                                                      |             |             |
-|GET    |/api/1.0/project                             |                                                                      |             |             |
-|PATCH  |/api/1.0/project                             |                                                                      |             |             |
-|POST   |/api/1.0/snippets                            |                                                                      |             |             |
-|PUT    |/api/1.0/snippets                            |                                                                      |             |             |
-|DELETE |/api/1.0/snippets                            |                                                                      |             |             |
+| Verb   | Path                                                        | Description                                                          | Request     | Return      |
+| ------ | ----------------------------------------------------------- | -------------------------------------------------------------------- | ----------- | ----------- |
+| POST   | /api/1.0/login                                              | List/search `File`s (and branches)                                   | AuthRequest | SessionInfo |
+| POST   | /api/1.0/user                                               | Create user                                                          | UserRequest |             |
+| POST   | /api/1.0/org                                                | After user verification, create your organization                    |             |             |
+| -----  | -----                                                       | -----                                                                | -----       | -----       |
+| GET    | /api/1.0/generators                                         |                                                                      |             |             |
+| GET    | /api/1.0/history                                            |                                                                      |             |             |
+| GET    | /api/1.0/moment                                             |                                                                      |             |             |
+| PATCH  | /api/1.0/moment                                             |                                                                      |             |             |
+| DELETE | /api/1.0/moment/<span style="color:red">*:moment_id*</span> | Delete the Moment spcified by `moment_id`                            | *null*      |             |
+| GET    | /api/1.0/project                                            |                                                                      |             |             |
+| PATCH  | /api/1.0/project                                            |                                                                      |             |             |
+| POST   | /api/1.0/snippets                                           |                                                                      |             |             |
+| PUT    | /api/1.0/snippets                                           |                                                                      |             |             |
+| DELETE | /api/1.0/snippets                                           |                                                                      |             |             |
 
 
 ### AuthRequest
