@@ -1,5 +1,7 @@
 <?php
 
+//namespace HTTP;
+
 abstract class HTTP_Relay{
 	public static function create( $type ){
 		switch( $type ){
