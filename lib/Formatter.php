@@ -1,9 +1,11 @@
 <?php
 abstract class Formatter{
-	protected $_cache;
+	protected $_cacheContent;
+	protected $_cacheSource;
 
 	public function clearCache(){
-		$this->_cache = null;
+		$this->_cacheContent = null;
+		$this->_cacheSource = null;
 		return $this;
 	}
 

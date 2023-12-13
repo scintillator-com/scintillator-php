@@ -38,7 +38,7 @@ final class User extends \Route {
 
 		$user = new \Models\User( $data );
 		$user->algorithm  = 'argon2id';
-		$user->client_key = Configuration::load()->generateClientKey();
+		$user->client_key = \Configuration::load()->generateClientKey();
 		$user->created    = $user->modified = new \MongoDB\BSON\UTCDateTime();
 		$user->is_enabled = true;
 		$user->is_verified = true;

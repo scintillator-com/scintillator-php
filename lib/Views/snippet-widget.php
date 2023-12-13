@@ -9,7 +9,7 @@
 	<meta name="keywords" content="" />
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.0/highlight.min.js"></script>
-	<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.0/languages/<?=$snippet->formatter->language;?>.min.js"></script>
+	<script charset="UTF-8" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.0/languages/<?=$snippet->generator->language;?>.min.js"></script>
 
 	<!-- TODO: theme -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.0/styles/default.min.css" />
@@ -65,7 +65,7 @@
 </head>
 <body class="ns">
 <main>
-	<pre class="ns"><code class="language-<?=$snippet->formatter->language;?>"><?=$code;?></code></pre>
+	<pre class="ns"><code class="language-<?=$snippet->generator->language;?>"><?=$code;?></code></pre>
 </main>
 <footer>
 	<span id="like"><a class="unset" href="#"><span class="set">❤︎</span><span class="unset">❤️</span></a></span>

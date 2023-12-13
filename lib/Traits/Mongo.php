@@ -6,6 +6,10 @@ trait Mongo{
 	private $db;
 	private $dbName;
 
+	protected static final function deletedOne( \MongoDB\DeleteResult $result ){
+		return $result->isAcknowledged() && $result->getDeletedCount() === 1;
+	}
+
 	protected final function getClient(){
 		static $client;
 		if( empty( $client ) ){

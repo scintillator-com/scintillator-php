@@ -57,7 +57,7 @@ final class SnippetWidgetController extends \Route{
 		if( !empty( $data['version'] ) )
 			$snippet->generator->version = $data['version'];
 
-		$formatter = \Formatters\SnippetFormatter::create( $snippetRes );
+		$formatter = \SnippetGenerator::create( $snippetRes );
 		$code = $formatter->format( $momentRes );
 
 		$this->html();

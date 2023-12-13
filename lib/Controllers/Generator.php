@@ -4,20 +4,20 @@ namespace Controllers;
 
 class Generator extends \Route{
 	use \Traits\Authorized;
-	use \Traits\Mongo;
 
 	public final function __construct( \Request $request ){
 		parent::__construct( $request );
-
 		$this->setHandler( 'GET', array( $this, 'GET' ), array( 'Accept', 'Authorization', 'Content-Type' ) );
 	}
 
-	protected final function GET(){
+	/**
+	 * NOTE: `protected` handlers can only be used by their own controllers
+	 *   Use `public` to allow CustomController
+	 **/
+	public final function GET(){
 		$this->json()->authorize();
 
-		$this->required = array(
-		
-		);
+		$this->required = array();
 		
 		$this->optional = array(
 			'language' => array( 'format' => 'string' ),
@@ -64,7 +64,7 @@ class Generator extends \Route{
 
 
 					default:
-						Log::warning( "Unsupported parameter: {$key}" );
+						\Log::warning( "Unsupported parameter: {$key}" );
 						break;
 				}
 			}

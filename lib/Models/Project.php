@@ -13,7 +13,7 @@ class Project extends MongoModel{
 	}
 
 	public final static function formatDetail( &$project ){
-		throw new Exception( 'Not implemented', 501 );
+		throw new \Exception( 'Not implemented', 501 );
 
 		$request = $moment->request;
 		$request->created = (int)$moment->request->created->toDateTime()->format( 'Uv' );

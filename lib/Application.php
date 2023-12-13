@@ -5,12 +5,16 @@ require( 'Response.php' );
 require( 'Route.php' );
 
 final class Application{
-	private static $first = null;
-	
+
+	public $controllers = array();
+	public $mode = 'files';
+
 	private $libPath = null;
 	private $request = null;
 	private $route = null;
 	private $start = null;
+
+	private static $first = null;
 
 	public function __construct( $libPath, $start=null ){
 		$this->libPath = $libPath;
@@ -19,7 +23,7 @@ final class Application{
 	}
 
 	public static final function explicit( $routeClass, $start=null ){
-		$instance = new Application( null, $start );
+		$instance = new \Application( null, $start );
 		if( $instance->loadRequest() ){
 			$instance->route = new $routeClass( $instance->request );
 			$instance->processRoute();
@@ -30,11 +34,11 @@ final class Application{
 
 	public final function loadRequest(){
 		try{
-			$this->request = Request::Load();
+			$this->request = \Request::Load();
 \Log::info( "{$this->request->method} {$this->request->fullPath}" );
 			return true;
 		}
-		catch( Exception $ex ){
+		catch( \Exception $ex ){
 			$response = new \Response();
 			$response->emitException( $ex );
 			return false;
@@ -44,18 +48,44 @@ final class Application{
 	public final function routeRequest(){
 		$pieces = explode( '/', trim( $this->request->path, '/' ) );
 		while( $pieces ){
-			$path = $this->libPath . DS . implode( DS, $pieces ) .'.php';
-			if( file_exists( $path ) ){
-				require( $path );
-				return $this;
+			switch( $this->mode ){
+				case 'db':
+					throw new \Exception( "Not Implemented: Application::\$mode = 'db'" );
+
+				case 'files':
+					$abs_path = $this->libPath . DS . implode( DS, $pieces ) .'.php';
+					if( file_exists( $path ) ){
+						\Log::debug( "Application->\$mode 'files'" );
+						require( $path );
+						return $this;
+					}
+					break;
+
+				case 'map':
+					$rel_path = '/'. implode( '/', $pieces );
+					if( $this->controllers->tryGet( $rel_path, $controller, $key ) ){
+						\Log::debug( "Application->\$mode 'map'" );
+						if( $key instanceof \RegexString && $key->test( $rel_path, $matches ) ){
+							foreach( $matches as $k => $v ){
+								if( !is_int( $k ) ){
+									$this->request->urlArgs[] = $v;
+									$this->request->namedArgs[ $k ] = $v;
+								}
+							}
+						}
+
+						$this->route = new $controller( $this->request, $controller );
+						return $this;
+					}
+					break;
 			}
-			else{
-				$piece = array_pop( $pieces );
-				array_unshift( $this->request->urlArgs, $piece );
-			}
+
+			$piece = array_pop( $pieces );
+			array_unshift( $this->request->urlArgs, $piece );
 		}
 
-		Response::Create404()->emit();
+		$response = new \Response();
+		$response->emit( 'Not Found', 404 );
 		exit;
 	}
 	
@@ -68,7 +98,7 @@ final class Application{
 	private final function runOnce(){
 		if( !self::$first ){
 			self::$first = $this;
-			if( !empty( Configuration::Load()->isDeveloper ) ){
+			if( !empty( \Configuration::Load()->isDeveloper ) ){
 				if( defined( 'E_DEPRECATED' ) )
 					set_error_handler( 'errors_as_exceptions', E_ALL & ~E_DEPRECATED );
 				else

@@ -22,7 +22,79 @@ sudo chmod 0755 /usr/local/bin/php-composer.sh
 sudo apt install php-mongodb
 php-composer.sh install
 
-#Docker build
+
+# TODO:
+
+get updated index.php
+convert request content-type checking to a hook
+convert request accept checking to a hook
+convert auth checking to a hook
+
+GET history
+ - between
+
+GET interfaces
+ - method
+ - domain & path | URL
+ - status (optional)
+
+composer archive --dir=tmp --file=scintillator-php-0.2.5
 
 
 
+# Docker build
+
+TBD
+
+
+# APIs
+
+## APIs
+
+| Verb   | Path                                                        | Description                                                          | Request     | Return      |
+| ------ | ----------------------------------------------------------- | -------------------------------------------------------------------- | ----------- | ----------- |
+| POST   | /api/1.0/login                                              | List/search `File`s (and branches)                                   | AuthRequest | SessionInfo |
+| POST   | /api/1.0/user                                               | Create user                                                          | UserRequest |             |
+| POST   | /api/1.0/org                                                | After user verification, create your organization                    |             |             |
+| -----  | -----                                                       | -----                                                                | -----       | -----       |
+| GET    | /api/1.0/generators                                         |                                                                      |             |             |
+| GET    | /api/1.0/history                                            |                                                                      |             |             |
+| GET    | /api/1.0/moment                                             |                                                                      |             |             |
+| PATCH  | /api/1.0/moment                                             |                                                                      |             |             |
+| DELETE | /api/1.0/moment/<span style="color:red">*:moment_id*</span> | Delete the Moment spcified by `moment_id`                            | *null*      |             |
+| GET    | /api/1.0/project                                            |                                                                      |             |             |
+| PATCH  | /api/1.0/project                                            |                                                                      |             |             |
+| POST   | /api/1.0/snippets                                           |                                                                      |             |             |
+| PUT    | /api/1.0/snippets                                           |                                                                      |             |             |
+| DELETE | /api/1.0/snippets                                           |                                                                      |             |             |
+
+
+### AuthRequest
+
+```json
+{
+    "username": "user@website.com",
+    "password": "SecretPassword!"
+}
+```
+
+### SessionInfo
+
+```json
+{
+    "expires": "2021-12-31T01:20:36Z",
+    "token": "0a052a182d0aef7e0a1eccaa9838ab4697aff51a413aa05c9e",
+    "type": "bearer"
+}
+```
+
+### UserRequest
+
+```json
+{
+    "email": "user@website.com",
+    "first_name": "First", 
+    "last_name": "Last",
+    "password": "SecretPassword!"
+}
+```

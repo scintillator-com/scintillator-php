@@ -12,7 +12,7 @@ final class History extends \Route {
 	}
 
 	//list/search several moments as a history
-	protected final function GET(){
+	public final function GET(){
 		$this->json()->authorize();
 
 		//TODO: list/search vs getDetail

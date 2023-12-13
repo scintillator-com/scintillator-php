@@ -129,7 +129,7 @@ function dump_js(){
 
 function errors_as_exceptions( $errno, $errstr, $errfile, $errline, $errcontext ){
 	error_log( "ERROR AT {$errfile}:{$errline} - {$errstr}" );
-	throw new Exception( $errstr, $errno );
+	throw new \Exception( $errstr, $errno );
 }
 
 if( !function_exists( 'getallheaders' ) ){

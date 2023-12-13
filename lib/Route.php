@@ -12,9 +12,9 @@ class Route{
 		$this->response = new \Response();
 
 		if( $this->request->isDebug() )
-			Log::$Level = IP_ERROR_ALL;
+			\Log::$Level = IP_ERROR_ALL;
 
-		Log::debug( "REQUEST:   {$this->request}" );
+		\Log::debug( "REQUEST:   {$this->request}" );
 		if( !empty( $request->headers['accept'] ) ){
 			//\Log::warning( $request->headers['accept'] );
 			$this->response->setContentType( $request->headers['accept'] );
@@ -29,7 +29,7 @@ class Route{
 		//which method is it asking for?
 		//Access-Control-Request-Method: POST
 		
-		$this->response->formatter = new Formatter_Empty();
+		$this->response->formatter = new \Formatters\_Empty();
 		$this->response->emit( null, 204 );
 	}
 
@@ -90,14 +90,25 @@ class Route{
 			throw new \Exception( "The '{$method}' method already has a registered handler" );
 	}
 
-	protected final function dump(){
-		$this->text();
-		call_user_func_array( 'dump', func_get_args() );
+	public final static function custom( $handlers ){
+		$route = new Route( $request );
+		foreach( $handlers as $method => $classMethod  ){
+			$cb = function(){
+				$reflectionMethod = new ReflectionMethod( $classMethod );
+				return $reflectionMethod->invoke( $route );
+			};
+
+			$route->setHandler( $method, $cb,  );
+		}
+	}
+
+	protected final function empty(){
+		$this->response->formatter = new \Formatters\_Empty();
+		return $this;
 	}
 
 	protected final function html(){
-		if( $this->request->method === 'GET' || 
-			$this->request->method === 'OPTIONS' ){
+		if( in_array( $this->request->method, array( 'DELETE', 'GET', 'OPTIONS' ), true ) ){
 			$this->response->setContentType( 'html' );
 			return $this;
 		}
@@ -116,8 +127,7 @@ class Route{
 	}
 
 	protected final function json(){
-		if( $this->request->method === 'GET' ||
-			$this->request->method === 'OPTIONS' ){
+		if( in_array( $this->request->method, array( 'DELETE', 'GET', 'OPTIONS' ), true ) ){
 			$this->response->setContentType( 'json' );
 			return $this;
 		}
@@ -141,8 +151,7 @@ class Route{
 	}
 
 	protected final function text(){
-		if( $this->request->method === 'GET' ||
-			$this->request->method === 'OPTIONS' ){
+		if( in_array( $this->request->method, array( 'DELETE', 'GET', 'OPTIONS' ), true ) ){
 			$this->response->setContentType( 'text' );
 			return $this;
 		}

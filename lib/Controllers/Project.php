@@ -12,7 +12,7 @@ final class Project extends \Route {
 		$this->setHandler( 'PATCH', array( $this, 'PATCH' ), array( 'Accept', 'Authorization', 'Content-Type' ) );
 	}
 
-	protected final function GET(){
+	public final function GET(){
 		$this->json()->authorize();
 
 		$this->required = array();
@@ -61,7 +61,7 @@ final class Project extends \Route {
 						break;
 
 					default:
-						Log::warning( "Unsupported parameter: {$key}" );
+						\Log::warning( "Unsupported parameter: {$key}" );
 						break;
 				}
 			}

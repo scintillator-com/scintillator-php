@@ -87,7 +87,7 @@ class Log{
 				return self::CRIT;
 
 			default:
-				Log::error( "Unrecognized error level: {$lvlStr}" );
+				\Log::error( "Unrecognized error level: {$lvlStr}" );
 				return $default ? $default : self::INFO;
 		}
 	}
